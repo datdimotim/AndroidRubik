@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/OpenGL.iml" filepath="$PROJECT_DIR$/OpenGL.iml" />
+      <module fileurl="file://$PROJECT_DIR$/StringSerializer/StringSerializer.iml" filepath="$PROJECT_DIR$/StringSerializer/StringSerializer.iml" />
+      <module fileurl="file://$PROJECT_DIR$/kub parallel/kub parallel.iml" filepath="$PROJECT_DIR$/kub parallel/kub parallel.iml" />
+      <module fileurl="file://$PROJECT_DIR$/main_module/main_module.iml" filepath="$PROJECT_DIR$/main_module/main_module.iml" />
+      <module fileurl="file://$PROJECT_DIR$/solver_module/solver_module.iml" filepath="$PROJECT_DIR$/solver_module/solver_module.iml" />
+    </modules>
+  </component>
+</project>
