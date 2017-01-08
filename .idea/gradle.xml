@@ -10,7 +10,6 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/StringSerializer" />
-            <option value="$PROJECT_DIR$/kub parallel" />
             <option value="$PROJECT_DIR$/main_module" />
             <option value="$PROJECT_DIR$/solver_module" />
           </set>

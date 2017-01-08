@@ -20,13 +20,14 @@ repositories {
     maven {
         url "https://s3.amazonaws.com/repo.commonsware.com"
     }
+    maven { url 'https://jitpack.io' }
 }
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:23.1.0'
-    compile project (':kub parallel')
+    compile 'com.android.support:appcompat-v7:25.1.0'
     compile project (':solver_module')
     compile project(':StringSerializer')
+    compile 'com.github.datdimotim:KubSolver:1.1'
 }
