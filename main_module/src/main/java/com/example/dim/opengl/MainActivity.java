@@ -10,7 +10,11 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -22,7 +26,8 @@ import com.sting_serializer.StringSerializer;
 import java.io.IOException;
 
 
-public class MainActivity extends Activity{
+
+public class MainActivity extends AppCompatActivity{
     public static final String KUB_STATE="KUB_STATE";
     public static final String TAG="kubApp";
     private Bitmap bitmap;
@@ -97,6 +102,22 @@ public class MainActivity extends Activity{
                 startActivityForResult(intent,1);
             }
         });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId()==R.id.menu_benchmark){
+            startActivity(new Intent(this,BenchmarkActivity.class));
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
