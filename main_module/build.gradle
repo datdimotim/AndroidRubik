@@ -1,19 +1,33 @@
 apply plugin: 'com.android.application'
 
 android {
+    signingConfigs {
+        config {
+            keyAlias 'dimotim'
+            keyPassword 'datmetalier'
+            storeFile file('C:/Users/dimotim/AndroidStudioProjects/keystore.jks')
+            storePassword 'datmetalier'
+        }
+    }
     compileSdkVersion 25
     buildToolsVersion "25.0.2"
-
     defaultConfig {
         applicationId "com.example.dim.opengl"
         versionCode 1
         versionName "1.0"
+        signingConfig signingConfigs.config
     }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+        debug {
+            debuggable true
+            signingConfig signingConfigs.config
+        }
+    }
+    productFlavors {
     }
 }
 repositories {
@@ -27,7 +41,7 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:25.1.0'
-    compile project (':solver_module')
+    compile project(':solver_module')
     compile project(':StringSerializer')
     compile 'com.github.datdimotim:KubSolver:1.1'
 }
