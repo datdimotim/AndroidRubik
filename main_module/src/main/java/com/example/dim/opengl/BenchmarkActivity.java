@@ -7,8 +7,11 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import kub.kubSolver.Kub;
-import kub.kubSolver.KubSolver;
+import com.dimotim.kubSolver.Kub;
+import com.dimotim.kubSolver.KubSolver;
+import com.dimotim.kubSolver.solvers.SimpleSolver1;
+import com.dimotim.kubSolver.solvers.SimpleSolver2;
+import com.dimotim.kubSolver.tables.SymTables;
 
 
 public class BenchmarkActivity extends AppCompatActivity {
@@ -38,8 +41,11 @@ public class BenchmarkActivity extends AppCompatActivity {
 
 class Benchmark extends AsyncTask<Void,Integer,int[]>{
     private volatile Controls controls;
-    final KubSolver kubSolver=new KubSolver();
-    final Kub kub=new Kub();
+    private final KubSolver<SymTables.KubState,SimpleSolver1.SolveState<SymTables.KubState>> kubSolver=
+            new KubSolver<>(SymTables.readTables(),
+                    new SimpleSolver1<SymTables.KubState>(),
+                    new SimpleSolver2<SymTables.KubState>());
+    final Kub kub=new Kub(false);
 
     Benchmark(AppCompatActivity activity){
         link(activity);
@@ -65,7 +71,7 @@ class Benchmark extends AsyncTask<Void,Integer,int[]>{
         for(int i=0;i<100;i++){
             if(isCancelled())return new int[]{0,0};
             kub.randomPos();
-            lenght+=kubSolver.solve(kub,null,1).length;
+            lenght+=kubSolver.solve(kub).length;
             publishProgress(i);
         }
         return new int[]{(int)(System.currentTimeMillis()-timeStart)/1000,lenght/100};

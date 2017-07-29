@@ -43,5 +43,5 @@ dependencies {
     compile 'com.android.support:appcompat-v7:25.1.0'
     compile project(':solver_module')
     compile project(':StringSerializer')
-    compile 'com.github.datdimotim:KubSolver:1.1'
+    compile 'com.github.datdimotim:KubSolver:2.3'
 }

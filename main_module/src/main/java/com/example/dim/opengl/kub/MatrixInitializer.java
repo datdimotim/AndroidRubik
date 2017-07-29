@@ -2,6 +2,8 @@ package com.example.dim.opengl.kub;
 
 import android.opengl.Matrix;
 
+import java.util.Arrays;
+
 public class MatrixInitializer {
     public static float[][] initMatrix(){
         float[][] matrix=new float[6][16];
@@ -29,6 +31,7 @@ public class MatrixInitializer {
         Matrix.rotateM(matrix[3], 0, 90, 0.0f, 1.0f, 0.0f);
         Matrix.rotateM(matrix[3], 0, 180, 0.0f, 0.0f, 1.0f);
         Matrix.rotateM(matrix[3],0,180,0.0f,1.0f,0.0f);
+        System.out.println(Arrays.deepToString(matrix));
         return matrix;
     }
 }

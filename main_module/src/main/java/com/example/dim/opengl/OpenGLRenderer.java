@@ -8,8 +8,11 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.dimotim.kubSolver.KubSolver;
+import com.dimotim.kubSolver.solvers.SimpleSolver1;
+import com.dimotim.kubSolver.solvers.SimpleSolver2;
+import com.dimotim.kubSolver.tables.SymTables;
 import com.example.dim.opengl.kub.Kub;
-import com.example.dim.opengl.kub.State;
 import com.example.dim.opengl.kub.to_solver_interface.FormatConverter;
 import com.example.dim.opengl.shaderUtils.TextureUtils;
 
@@ -17,10 +20,6 @@ import java.io.Serializable;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
-
-import kub.kubSolver.InvalidPositionException;
-import kub.kubSolver.KubSolver;
-import kub.kubSolver.Solution;
 
 import static android.opengl.GLES20.GL_COLOR_BUFFER_BIT;
 import static android.opengl.GLES20.GL_DEPTH_BUFFER_BIT;
@@ -48,6 +47,7 @@ public class OpenGLRenderer implements Renderer,View.OnTouchListener{
     private final String fragmentShaderText;
     private final String vertexShaderText;
     private Kub kub;
+    private KubSolver kubSolver=null;
     private final GLSurfaceView glSurfaceView;
     private final KubChangeListener kubChangeListener;
     public interface KubChangeListener{
@@ -60,6 +60,9 @@ public class OpenGLRenderer implements Renderer,View.OnTouchListener{
                           String fragmentShaderText,
                           State saveState,
                           KubChangeListener kubChangeListener) {
+        kubSolver=  new KubSolver<>(SymTables.readTables(),
+                        new SimpleSolver1<SymTables.KubState>(),
+                        new SimpleSolver2<SymTables.KubState>());
         this.kubChangeListener=kubChangeListener;
         this.glSurfaceView = glSurfaceView;
         this.bitmap = bitmap;
@@ -197,12 +200,12 @@ public class OpenGLRenderer implements Renderer,View.OnTouchListener{
                 grani=FormatConverter.normalizeGrani(grani);
                 try {
                     long st=System.currentTimeMillis();
-                    Solution solution=new KubSolver().solve(new kub.kubSolver.Kub(grani),null,1);
+                    KubSolver.Solution solution=kubSolver.solve(new com.dimotim.kubSolver.Kub(grani));
                     Log.i(TAG,"Solution= "+solution);
                     Log.i(TAG,"Solution time= "+(System.currentTimeMillis()-st)+" ms");
 
                     kub.setPoslPovorots(FormatConverter.convertHods(solution.getHods()));
-                } catch (InvalidPositionException e) {
+                } catch (com.dimotim.kubSolver.Kub.InvalidPositionException e) {
                     e.printStackTrace();
                 }
             }

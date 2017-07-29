@@ -17,14 +17,14 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.commonsware.cwac.layouts.AspectLockedFrameLayout;
+import com.dimotim.kubSolver.Kub;
+import com.dimotim.kubSolver.KubSolver;
+import com.dimotim.kubSolver.solvers.SimpleSolver1;
+import com.dimotim.kubSolver.solvers.SimpleSolver2;
+import com.dimotim.kubSolver.tables.SymTables;
 import com.sting_serializer.StringSerializer;
 
 import java.io.IOException;
-import java.util.Arrays;
-
-import kub.kubSolver.InvalidPositionException;
-import kub.kubSolver.Kub;
-import kub.kubSolver.KubSolver;
 
 
 public class SolverActivity extends AppCompatActivity {
@@ -37,11 +37,16 @@ public class SolverActivity extends AppCompatActivity {
     private Button solve;
     private Button show;
     private Button back;
+    private KubSolver<SymTables.KubState,SimpleSolver1.SolveState<SymTables.KubState>> kubSolver=null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         createUI();
         initListeners();
+
+        kubSolver=  new KubSolver<>(SymTables.readTables(),
+                        new SimpleSolver1<SymTables.KubState>(),
+                        new SimpleSolver2<SymTables.KubState>());
     }
     private void initListeners(){
         faceletController=new FaceletController(facelet,sides,selectors);
@@ -55,7 +60,7 @@ public class SolverActivity extends AppCompatActivity {
                 }
                 try {
                     AlertDialog.Builder dialog=new AlertDialog.Builder(SolverActivity.this);
-                    dialog.setTitle(new KubSolver().solve(new Kub(grani),null,1).toString()+"");
+                    dialog.setTitle(kubSolver.solve(new Kub(grani)).toString()+"");
                     dialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
@@ -63,7 +68,7 @@ public class SolverActivity extends AppCompatActivity {
                         }
                     });
                     dialog.show();
-                } catch (InvalidPositionException e) {
+                } catch (Kub.InvalidPositionException e) {
                     throw new RuntimeException("incorrect position!!!");
                 }
             }
@@ -104,7 +109,7 @@ public class SolverActivity extends AppCompatActivity {
         }
         try {
             new Kub(grani);
-        } catch (InvalidPositionException e) {
+        } catch (Kub.InvalidPositionException e) {
             return false;
         }
         return true;

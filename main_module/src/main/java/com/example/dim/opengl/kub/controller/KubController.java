@@ -3,7 +3,6 @@ package com.example.dim.opengl.kub.controller;
 import android.opengl.Matrix;
 import android.view.MotionEvent;
 
-import com.example.dim.opengl.LinAl;
 import com.example.dim.opengl.kub.Kub;
 import com.example.dim.opengl.kub.MatrixInitializer;
 import com.example.dim.opengl.kub.Povorotable;
@@ -229,8 +228,8 @@ public class KubController {
         float[] tmp = new float[16];
         Matrix.multiplyMM(tmp, 0, matrix, 0, this.matrix[ig], 0);
         Matrix.multiplyMM(globalMatrix, 0, monitorMatrix, 0, tmp, 0);
-        float[] inverseMatrix = LinAl.toLinear(LinAl.inverse(LinAl.toQuad(globalMatrix, 4)));
-
+        float[] inverseMatrix = new float[16];
+        Matrix.invertM(inverseMatrix,0,globalMatrix,0);
         float[] p1 = {coord[0], coord[1], -1.0f, 1.0f};
         float[] p2 = {coord[0], coord[1], 1.0f, 1.0f};
         float[] p1R = new float[4];
@@ -284,7 +283,7 @@ public class KubController {
         return true;
     }
 
-    private class Point2d {
+    private static class Point2d {
         float x, y;
 
         Point2d(float x, float y) {
@@ -298,7 +297,7 @@ public class KubController {
         }
     }
 
-    private class Rotating {
+    private static class Rotating {
         private final int gran, i, j, napr;
 
         Rotating(int gran, int i, int j, int napr) {

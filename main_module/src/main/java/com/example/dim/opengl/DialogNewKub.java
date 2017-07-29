@@ -9,7 +9,7 @@ import android.os.Bundle;
 public class DialogNewKub extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final int[] n={-1};
-        String[] strings=new String[31];
+        String[] strings=new String[127];
         for(int i=0;i<strings.length;i++){
             strings[i]=(i+2)+"x"+(i+2)+"x"+(i+2);
         }

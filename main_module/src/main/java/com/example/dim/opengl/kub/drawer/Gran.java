@@ -46,7 +46,7 @@ class Gran {
         indexId = a[0];
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexId);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexData.capacity() * 2, indexData, GL_STATIC_DRAW);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,0);
     }
 
     void draw(SimpleShaderProgram program, FloatBuffer colorData, int srez, boolean in) {

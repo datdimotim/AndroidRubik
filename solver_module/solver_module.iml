@@ -90,6 +90,7 @@
     <orderEntry type="jdk" jdkName="Android API 25 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" exported="" name="support-annotations-25.1.0" level="project" />
+    <orderEntry type="library" exported="" name="CompactArrays-1.0.2" level="project" />
     <orderEntry type="library" exported="" name="constraint-layout-1.0.0-beta4" level="project" />
     <orderEntry type="library" exported="" name="constraint-layout-solver-1.0.0-beta4" level="project" />
     <orderEntry type="library" exported="" name="support-compat-25.1.0" level="project" />
@@ -102,8 +103,8 @@
     <orderEntry type="library" exported="" name="support-media-compat-25.1.0" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="junit-4.12" level="project" />
     <orderEntry type="library" exported="" name="support-vector-drawable-25.1.0" level="project" />
+    <orderEntry type="library" exported="" name="KubSolver-2.3" level="project" />
     <orderEntry type="library" exported="" name="appcompat-v7-25.1.0" level="project" />
-    <orderEntry type="library" exported="" name="KubSolver-1.1" level="project" />
     <orderEntry type="library" exported="" name="support-core-utils-25.1.0" level="project" />
     <orderEntry type="module" module-name="StringSerializer" exported="" />
     <orderEntry type="library" exported="" name="android-android-25" level="project" />
