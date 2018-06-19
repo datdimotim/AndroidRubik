@@ -111,8 +111,32 @@ public class MainActivity extends AppCompatActivity{
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId()==R.id.menu_benchmark){
-            startActivity(new Intent(this,BenchmarkActivity.class));
+        if(item.getItemId()==R.id.menu_benchmark1vs100){
+            Intent intent=new Intent(this,BenchmarkActivity.class);
+            intent.putExtra(BenchmarkActivity.THREADS,1);
+            intent.putExtra(BenchmarkActivity.SIZE,100);
+            startActivity(intent);
+            return true;
+        }
+        if(item.getItemId()==R.id.menu_benchmark8vs1000){
+            Intent intent=new Intent(this,BenchmarkActivity.class);
+            intent.putExtra(BenchmarkActivity.THREADS,8);
+            intent.putExtra(BenchmarkActivity.SIZE,1000);
+            startActivity(intent);
+            return true;
+        }
+        if(item.getItemId()==R.id.menu_benchmark1vs1000){
+            Intent intent=new Intent(this,BenchmarkActivity.class);
+            intent.putExtra(BenchmarkActivity.THREADS,1);
+            intent.putExtra(BenchmarkActivity.SIZE,1000);
+            startActivity(intent);
+            return true;
+        }
+        if(item.getItemId()==R.id.menu_benchmark8vs10000){
+            Intent intent=new Intent(this,BenchmarkActivity.class);
+            intent.putExtra(BenchmarkActivity.THREADS,8);
+            intent.putExtra(BenchmarkActivity.SIZE,10000);
+            startActivity(intent);
             return true;
         }
         return super.onOptionsItemSelected(item);

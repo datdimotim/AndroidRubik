@@ -1,4 +1,5 @@
 package com.example.dim.opengl;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -13,14 +14,29 @@ import com.dimotim.kubSolver.solvers.SimpleSolver1;
 import com.dimotim.kubSolver.solvers.SimpleSolver2;
 import com.dimotim.kubSolver.tables.SymTables;
 
+import java.util.ArrayList;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+
 
 public class BenchmarkActivity extends AppCompatActivity {
+    public static final String TAG="BenchmarkActivity: ";
+    public static final String THREADS="THREADS";
+    public static final String SIZE="SIZE";
     private Benchmark benchmark;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.benchmark_layout);
-        benchmark=new Benchmark(this);
+        Intent intent=getIntent();
+        final int threads=intent.getIntExtra(THREADS,-1);
+        if(threads==-1)throw new RuntimeException();
+        final int size=intent.getIntExtra(SIZE,-1);
+        if(size==-1)throw new RuntimeException();
+        benchmark=new Benchmark(this,threads,size);
         findViewById(R.id.button_cancel).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -39,24 +55,19 @@ public class BenchmarkActivity extends AppCompatActivity {
     }
 }
 
-class Benchmark extends AsyncTask<Void,Integer,int[]>{
-    private volatile Controls controls;
+class Benchmark extends AsyncTask<Void,Integer,float[]>{
+    private final ExecutorService es;
+    private final int size;
+    private final Controls controls;
     private final KubSolver<SymTables.KubState,SimpleSolver1.SolveState<SymTables.KubState>> kubSolver=
             new KubSolver<>(SymTables.readTables(),
                     new SimpleSolver1<SymTables.KubState>(),
                     new SimpleSolver2<SymTables.KubState>());
-    final Kub kub=new Kub(false);
 
-    Benchmark(AppCompatActivity activity){
-        link(activity);
-    }
-
-    void link(AppCompatActivity activity){
+    Benchmark(AppCompatActivity activity,int threads,int size){
+        this.size=size;
+        es=Executors.newFixedThreadPool(threads);
         controls=new Controls(activity);
-    }
-
-    void unlink(){
-        controls=null;
     }
 
     @Override
@@ -65,40 +76,54 @@ class Benchmark extends AsyncTask<Void,Integer,int[]>{
     }
 
     @Override
-    protected int[] doInBackground(Void... params) {
+    protected float[] doInBackground(Void... params) {
         final long timeStart=System.currentTimeMillis();
-        int lenght=0;
-        for(int i=0;i<100;i++){
-            if(isCancelled())return new int[]{0,0};
-            kub.randomPos();
-            lenght+=kubSolver.solve(kub).length;
-            publishProgress(i);
+        int solutionLenght=0;
+
+        final ArrayList<Callable<Integer>> taskList=new ArrayList<>(size);
+        for(int i = 0; i< size; i++)taskList.add(new Callable<Integer>() {
+            private final Kub kub=new Kub(true);
+            @Override
+            public Integer call(){
+                return kubSolver.solve(kub).length;
+            }
+        });
+
+        ArrayList<Future<Integer>> resultList=new ArrayList<>(size);
+        for(Callable<Integer> task:taskList)resultList.add(es.submit(task));
+
+        try {
+            for(int i = 0; i< size; i++){
+                if(isCancelled())break;
+                solutionLenght+=resultList.get(i).get();
+                publishProgress((int)(100*i/(float) size));
+            }
+        }catch (ExecutionException|InterruptedException e){
+            throw new RuntimeException(e);
+        }finally {
+            es.shutdownNow();
         }
-        return new int[]{(int)(System.currentTimeMillis()-timeStart)/1000,lenght/100};
+
+        return new float[]{(System.currentTimeMillis()-timeStart)/(float)1000,solutionLenght/(float) size};
     }
 
     @Override
     protected void onProgressUpdate(Integer... values) {
-        Controls controls=this.controls;
-        if(controls==null)return;
         controls.progressBar.setProgress(values[0]);
         controls.percent.setText(values[0]+"%");
     }
 
     @Override
-    protected void onCancelled() {
-        Controls controls=this.controls;
-        if(controls==null)return;
-        controls.activity.finish();
-    }
-
-    @Override
-    protected void onPostExecute(int[] ints) {
-        Controls controls=this.controls;
-        if (controls==null)return;
+    protected void onPostExecute(float[] floats) {
+        if(isCancelled()){
+            controls.activity.finish();
+            return;
+        }
         controls.progressBar.setProgress(100);
         controls.percent.setText(100+"%");
-        controls.title.setText("Time="+ints[0]+" seconds, avg length="+ints[1]);
+        controls.title.setText(
+                        "Total time="+floats[0]+"s\n" +
+                        "Avg size="+floats[1]);
     }
 
     private static class Controls{
