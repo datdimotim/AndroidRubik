@@ -5,12 +5,12 @@ android {
         config {
             keyAlias 'dimotim'
             keyPassword 'datmetalier'
-            storeFile file('C:/Users/dimotim/AndroidStudioProjects/keystore.jks')
+            storeFile file('keystore.jks')
             storePassword 'datmetalier'
         }
     }
     compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    buildToolsVersion '26.0.2'
     defaultConfig {
         applicationId "com.example.dim.opengl"
         versionCode 1
