@@ -4,7 +4,7 @@ import com.example.dim.opengl.kub.PovorotInf;
 
 import java.util.ArrayList;
 public class FormatConverter {
-    public static PovorotInf[] convertHods(int[] hods){
+    public static PovorotInf[] convertHods(int[] hods, int dim){
         ArrayList<PovorotInf> listHods=new ArrayList<>();
         for(int hod:hods){
             switch (hod){
@@ -20,17 +20,17 @@ public class FormatConverter {
                 case 8:listHods.add(new PovorotInf(1,3,-1));break;
                 case 9:listHods.add(new PovorotInf(1,3,1));listHods.add(new PovorotInf(1,3,1));break;
 
-                case 10:listHods.add(new PovorotInf(3,3,-1));break;
-                case 11:listHods.add(new PovorotInf(3,3,1));break;
-                case 12:listHods.add(new PovorotInf(3,3,-1));listHods.add(new PovorotInf(3,3,-1));break;
+                case 10:listHods.add(new PovorotInf(dim,3,-1));break;
+                case 11:listHods.add(new PovorotInf(dim,3,1));break;
+                case 12:listHods.add(new PovorotInf(dim,3,-1));listHods.add(new PovorotInf(dim,3,-1));break;
 
-                case 13:listHods.add(new PovorotInf(3,2,-1));break;
-                case 14:listHods.add(new PovorotInf(3,2,1));break;
-                case 15:listHods.add(new PovorotInf(3,2,-1));listHods.add(new PovorotInf(3,2,-1));break;
+                case 13:listHods.add(new PovorotInf(dim,2,-1));break;
+                case 14:listHods.add(new PovorotInf(dim,2,1));break;
+                case 15:listHods.add(new PovorotInf(dim,2,-1));listHods.add(new PovorotInf(dim,2,-1));break;
 
-                case 16:listHods.add(new PovorotInf(3,1,-1));break;
-                case 17:listHods.add(new PovorotInf(3,1,1));break;
-                case 18:listHods.add(new PovorotInf(3,1,-1));listHods.add(new PovorotInf(3,1,-1));break;
+                case 16:listHods.add(new PovorotInf(dim,1,-1));break;
+                case 17:listHods.add(new PovorotInf(dim,1,1));break;
+                case 18:listHods.add(new PovorotInf(dim,1,-1));listHods.add(new PovorotInf(dim,1,-1));break;
                 default:throw new RuntimeException("Incorrect hod");
             }
         }

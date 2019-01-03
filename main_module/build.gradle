@@ -10,7 +10,7 @@ android {
         }
     }
     compileSdkVersion 25
-    buildToolsVersion '26.0.2'
+
     defaultConfig {
         applicationId "com.example.dim.opengl"
         versionCode 1
@@ -38,10 +38,8 @@ repositories {
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:25.1.0'
     compile project(':solver_module')
     compile project(':StringSerializer')
-    compile 'com.github.datdimotim:KubSolver:2.3'
+    compile 'com.github.datdimotim:KubSolver:2.3.2'
 }

@@ -58,6 +58,9 @@ public class MainActivity extends AppCompatActivity{
                 if(size==3){
                     findViewById(R.id.buttonSolve).setVisibility(View.VISIBLE);
                     findViewById(R.id.buttonEdit).setVisibility(View.VISIBLE);
+                }else if(size==2){
+                    findViewById(R.id.buttonSolve).setVisibility(View.VISIBLE);
+                    findViewById(R.id.buttonEdit).setVisibility(View.GONE);
                 }
                 else {
                     findViewById(R.id.buttonSolve).setVisibility(View.GONE);
