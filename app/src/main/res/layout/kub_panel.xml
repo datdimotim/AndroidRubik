@@ -1,0 +1,18 @@
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:weightSum="5">
+
+    <com.commonsware.cwac.layouts.AspectLockedFrameLayout
+        android:layout_width="414dp"
+        android:layout_height="248dp"
+        android:background="@color/colorAccent"
+        android:layout_weight="3.23">
+
+    </com.commonsware.cwac.layouts.AspectLockedFrameLayout>
+
+
+</LinearLayout>
