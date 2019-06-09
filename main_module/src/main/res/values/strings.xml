@@ -1,8 +1,0 @@
-<resources>
-    <string name="app_name">Kubik</string>
-    <string name="buttonShuffleText">Shuffle</string>
-    <string name="buttonPlusText">New Cube</string>
-    <string name="kub_n_in_dialog">N=</string>
-    <string name="solve">SOLVE</string>
-    <string name="edit">EDIT</string>
-</resources>
