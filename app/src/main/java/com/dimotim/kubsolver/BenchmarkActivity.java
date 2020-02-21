@@ -37,6 +37,8 @@ public class BenchmarkActivity extends AppCompatActivity {
         final int size=intent.getIntExtra(SIZE,-1);
         if(size==-1)throw new RuntimeException();
         benchmark=new Benchmark(this,threads,size);
+        TextView versionTextView= findViewById(R.id.version);
+        versionTextView.setText(versionTextView.getText()+BuildConfig.gitHash);
         findViewById(R.id.button_cancel).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
