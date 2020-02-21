@@ -1,5 +1,29 @@
 apply plugin: 'com.android.application'
 
+def getGitHash = { ->
+    def stdout = new ByteArrayOutputStream()
+    exec {
+        commandLine 'git', 'rev-parse', '--short', 'HEAD'
+        standardOutput = stdout
+    }
+
+
+    def code = exec {
+        commandLine 'git', 'diff', '--exit-code'
+        standardOutput = new ByteArrayOutputStream()
+        ignoreExitValue = true
+    }
+
+    def workDirIsClear = code.exitValue == 0
+    def suffix
+    if(workDirIsClear)suffix=""
+    else suffix="-dirty"
+
+    return stdout.toString().trim() + suffix
+}
+
+def gitHash=getGitHash()
+
 android {
     compileSdkVersion 28
     defaultConfig {
@@ -9,6 +33,7 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        buildConfigField "String", "gitHash", "\""+gitHash+"\""
     }
 
     signingConfigs {
@@ -26,7 +51,7 @@ android {
             signingConfig signingConfigs.release
             applicationVariants.all { variant ->
                 variant.outputs.all {
-                    outputFileName = applicationName+".apk"
+                    outputFileName = applicationName + "-" + gitHash + ".apk"
                 }
             }
         }
