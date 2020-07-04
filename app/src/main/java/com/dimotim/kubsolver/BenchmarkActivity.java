@@ -87,7 +87,7 @@ class Benchmark extends AsyncTask<Void,Integer,float[]>{
             private final Kub kub=new Kub(true);
             @Override
             public Integer call(){
-                return kubSolver.solve(kub).length;
+                return kubSolver.solve(kub).getLength();
             }
         });
 

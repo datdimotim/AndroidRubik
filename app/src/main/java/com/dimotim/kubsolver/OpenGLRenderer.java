@@ -224,7 +224,7 @@ public class OpenGLRenderer implements Renderer, View.OnTouchListener {
                     grani = FormatConverter.normalizeGrani(grani);
                     try {
                         long st = System.currentTimeMillis();
-                        Solution solution = new com.dimotim.kubSolver.Kub(grani).solve();
+                        Solution solution = Solvers.getSolvers().kubSolver.solve(new com.dimotim.kubSolver.Kub(grani));
                         Log.i(TAG, "Solution= " + solution);
                         Log.i(TAG, "Solution time= " + (System.currentTimeMillis() - st) + " ms");
 
@@ -241,7 +241,7 @@ public class OpenGLRenderer implements Renderer, View.OnTouchListener {
                     System.out.println("Grani: " + Arrays.deepToString(grani));
                     try {
                         long st = System.currentTimeMillis();
-                        Solution solution = new Kub2x2(grani).solve();
+                        Solution solution = Solvers.getSolvers().kub2x2Solver.solve(new Kub2x2(grani));
                         Log.i(TAG, "Solution= " + solution);
                         Log.i(TAG, "Solution time= " + (System.currentTimeMillis() - st) + " ms");
 

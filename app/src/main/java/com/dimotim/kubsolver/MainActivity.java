@@ -1,4 +1,5 @@
 package com.dimotim.kubsolver;
+
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
@@ -17,7 +18,6 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-
 import com.dimotim.kubsolver.shaderUtils.FileUtils;
 import com.sting_serializer.StringSerializer;
 
@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity{
     private Bitmap bitmap;
     private GLSurfaceView glSurfaceView;
     public OpenGLRenderer renderer;
-    //private OpenGLRenderer.State state;
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.i(TAG,"onCreate");
