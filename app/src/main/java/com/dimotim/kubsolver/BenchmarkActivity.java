@@ -61,10 +61,7 @@ class Benchmark extends AsyncTask<Void,Integer,float[]>{
     private final ExecutorService es;
     private final int size;
     private final Controls controls;
-    private final KubSolver<SymTables.KubState,SimpleSolver1.SolveState<SymTables.KubState>> kubSolver=
-            new KubSolver<>(SymTables.readTables(),
-                    new SimpleSolver1<SymTables.KubState>(),
-                    new SimpleSolver2<SymTables.KubState>());
+    private final KubSolver<?,?> kubSolver= Solvers.getSolvers().kubSolver;
 
     Benchmark(AppCompatActivity activity,int threads,int size){
         this.size=size;
