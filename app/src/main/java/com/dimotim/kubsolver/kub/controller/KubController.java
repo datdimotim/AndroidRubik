@@ -23,8 +23,9 @@ public class KubController {
         this.kub = kub;
     }
 
-    public void command(float[] coord, float[] matrix, float[] monitorMatrix, int event) {
-        switch (event) {
+    public void command(float[] matrix, float[] monitorMatrix, Kub.TouchEvent event) {
+        float[] coord={event.getX(),event.getY()};
+        switch (event.getActionMasked()) {
             case MotionEvent.ACTION_DOWN: {
                 float zRec = 2f;
                 int gran = -1;

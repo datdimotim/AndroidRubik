@@ -107,12 +107,23 @@ public class OpenGLRenderer implements Renderer, View.OnTouchListener {
 
         float aspect=width*1.0f/height;
 
-        float[] pers = new float[]{
-                (float) (1 / tan(alpha)/aspect), 0, 0, 0,
-                0, (float) (1 / (tan(alpha))), 0, 0,
-                0, 0, (ll + l) / (ll - l), 1,
-                0, 0, -2 * ll * l / (ll - l), 0
-        };
+        final float[] pers;
+
+        if(width<height){
+            pers=new float[]{
+                    (float) (1 / tan(alpha)/aspect), 0, 0, 0,
+                    0, (float) (1 / (tan(alpha))), 0, 0,
+                    0, 0, (ll + l) / (ll - l), 1,
+                    0, 0, -2 * ll * l / (ll - l), 0
+            };
+        }else {
+            pers=new float[]{
+                    (float) (1 / tan(alpha)), 0, 0, 0,
+                    0, (float) (1 / (tan(alpha))*aspect), 0, 0,
+                    0, 0, (ll + l) / (ll - l), 1,
+                    0, 0, -2 * ll * l / (ll - l), 0
+            };
+        }
 
         Matrix.translateM(pers,0,0,0,7);
 
@@ -133,16 +144,13 @@ public class OpenGLRenderer implements Renderer, View.OnTouchListener {
         final State[] state = new State[1];
         final Object sync = new Object();
         synchronized (sync) {
-            glSurfaceView.queueEvent(new Runnable() {
-                @Override
-                public void run() {
-                    float[] matSave = new float[16];
-                    System.arraycopy(viewMatrix, 0, matSave, 0, 16);
-                    com.dimotim.kubsolver.kub.State kubState = kub.getState();
-                    state[0] = new State(kubState, matSave);
-                    synchronized (sync) {
-                        sync.notifyAll();
-                    }
+            glSurfaceView.queueEvent(() -> {
+                float[] matSave = new float[16];
+                System.arraycopy(viewMatrix, 0, matSave, 0, 16);
+                com.dimotim.kubsolver.kub.State kubState = kub.getState();
+                state[0] = new State(kubState, matSave);
+                synchronized (sync) {
+                    sync.notifyAll();
                 }
             });
             try {
@@ -156,13 +164,10 @@ public class OpenGLRenderer implements Renderer, View.OnTouchListener {
 
     public void setState(final State state) {
         kubChangeListener.kubChanged(state.kubState.getN());
-        glSurfaceView.queueEvent(new Runnable() {
-            @Override
-            public void run() {
-                kub = new Kub(state.kubState);
-                System.arraycopy(state.viewMatrix, 0, viewMatrix, 0, 16);
-                kub.shaderProgramChanged(shaderProgram);
-            }
+        glSurfaceView.queueEvent(() -> {
+            kub = new Kub(state.kubState);
+            System.arraycopy(state.viewMatrix, 0, viewMatrix, 0, 16);
+            kub.shaderProgramChanged(shaderProgram);
         });
     }
 
@@ -173,102 +178,76 @@ public class OpenGLRenderer implements Renderer, View.OnTouchListener {
         return coord;
     }
 
-    public boolean onTouch(View v, MotionEvent event) {
-        float x = event.getX();
-        float y = event.getY();
-        int eventMask = event.getActionMasked();
-        glSurfaceView.queueEvent(new SyncOnTouch(x, y, eventMask));
+    @Override
+    public boolean onTouch(View v, MotionEvent event){
+        int mask=event.getActionMasked();
+        float x=event.getX();
+        float y=event.getY();
+        glSurfaceView.queueEvent(()-> {
+            float[] normalizedCoords=toOpenglOutCoord(x,y);
+            Kub.TouchEvent touchEvent=new Kub.TouchEvent(normalizedCoords[0],normalizedCoords[1],mask);
+            kub.onTouch(viewMatrix,monitorMatrix,touchEvent);
+        });
         return true;
     }
 
     public void setNewKub(final int n) {
         kubChangeListener.kubChanged(n);
-        glSurfaceView.queueEvent(new Runnable() {
-            @Override
-            public void run() {
-                kub = new Kub(n);
-                kub.shaderProgramChanged(shaderProgram);
-            }
+        glSurfaceView.queueEvent(() -> {
+            kub = new Kub(n);
+            kub.shaderProgramChanged(shaderProgram);
         });
     }
 
     public void setNewKub(final int[][][] grani) {
         kubChangeListener.kubChanged(grani[0].length);
-        glSurfaceView.queueEvent(new Runnable() {
-            @Override
-            public void run() {
-                kub = new Kub(grani);
-                kub.shaderProgramChanged(shaderProgram);
-            }
+        glSurfaceView.queueEvent(() -> {
+            kub = new Kub(grani);
+            kub.shaderProgramChanged(shaderProgram);
         });
     }
 
     public void shuffle() {
-        glSurfaceView.queueEvent(new Runnable() {
-            @Override
-            public void run() {
-                kub.shuffle();
-            }
-        });
+        glSurfaceView.queueEvent(() -> kub.shuffle());
     }
 
     public void solve() {
-        glSurfaceView.queueEvent(new Runnable() {
-            @Override
-            public void run() {
-                com.dimotim.kubsolver.kub.State state = kub.getState();
-                if (state.isRotating()) return;
-                if (state.getN() == 3) {
-                    int[][][] grani = new int[6][3][3];
-                    state.getKvColor(grani);
-                    grani = FormatConverter.normalizeGrani(grani);
-                    try {
-                        long st = System.currentTimeMillis();
-                        Solution solution = Solvers.getSolvers().kubSolver.solve(new com.dimotim.kubSolver.Kub(grani));
-                        Log.i(TAG, "Solution= " + solution);
-                        Log.i(TAG, "Solution time= " + (System.currentTimeMillis() - st) + " ms");
+        glSurfaceView.queueEvent(() -> {
+            com.dimotim.kubsolver.kub.State state = kub.getState();
+            if (state.isRotating()) return;
+            if (state.getN() == 3) {
+                int[][][] grani = new int[6][3][3];
+                state.getKvColor(grani);
+                grani = FormatConverter.normalizeGrani(grani);
+                try {
+                    long st = System.currentTimeMillis();
+                    Solution solution = Solvers.getSolvers().kubSolver.solve(new com.dimotim.kubSolver.Kub(grani));
+                    Log.i(TAG, "Solution= " + solution);
+                    Log.i(TAG, "Solution time= " + (System.currentTimeMillis() - st) + " ms");
 
-                        kub.setPoslPovorots(FormatConverter.convertHods(solution.getHods(), 3));
-                    } catch (com.dimotim.kubSolver.Kub.InvalidPositionException e) {
-                        e.printStackTrace();
-                    }
+                    kub.setPoslPovorots(FormatConverter.convertHods(solution.getHods(), 3));
+                } catch (com.dimotim.kubSolver.Kub.InvalidPositionException e) {
+                    e.printStackTrace();
                 }
-                if (state.getN() == 2) {
-                    int[][][] grani = new int[6][2][2];
-                    state.getKvColor(grani);
-                    for (int i = 0; i < 6; i++)
-                        for (int j = 0; j < 2; j++) for (int k = 0; k < 2; k++) grani[i][j][k]--;
-                    System.out.println("Grani: " + Arrays.deepToString(grani));
-                    try {
-                        long st = System.currentTimeMillis();
-                        Solution solution = Solvers.getSolvers().kub2x2Solver.solve(new Kub2x2(grani));
-                        Log.i(TAG, "Solution= " + solution);
-                        Log.i(TAG, "Solution time= " + (System.currentTimeMillis() - st) + " ms");
+            }
+            if (state.getN() == 2) {
+                int[][][] grani = new int[6][2][2];
+                state.getKvColor(grani);
+                for (int i = 0; i < 6; i++)
+                    for (int j = 0; j < 2; j++) for (int k = 0; k < 2; k++) grani[i][j][k]--;
+                System.out.println("Grani: " + Arrays.deepToString(grani));
+                try {
+                    long st = System.currentTimeMillis();
+                    Solution solution = Solvers.getSolvers().kub2x2Solver.solve(new Kub2x2(grani));
+                    Log.i(TAG, "Solution= " + solution);
+                    Log.i(TAG, "Solution time= " + (System.currentTimeMillis() - st) + " ms");
 
-                        kub.setPoslPovorots(FormatConverter.convertHods(solution.getHods(), 2));
-                    } catch (com.dimotim.kubSolver.Kub2x2.InvalidPositionException e) {
-                        e.printStackTrace();
-                    }
+                    kub.setPoslPovorots(FormatConverter.convertHods(solution.getHods(), 2));
+                } catch (Kub2x2.InvalidPositionException e) {
+                    e.printStackTrace();
                 }
             }
         });
-    }
-
-    private class SyncOnTouch implements Runnable {
-        private final float x;
-        private final float y;
-        private final int eventMask;
-
-        private SyncOnTouch(float x, float y, int eventMask) {
-            this.x = x;
-            this.y = y;
-            this.eventMask = eventMask;
-        }
-
-        public void run() {
-            float[] coord = toOpenglOutCoord(x, y);
-            kub.onTouch(coord, viewMatrix, monitorMatrix, eventMask);
-        }
     }
 
     public static class State implements Serializable {

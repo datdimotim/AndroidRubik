@@ -7,6 +7,7 @@ import com.dimotim.kubsolver.kub.facelet.Povorot;
 
 import java.util.Random;
 
+import lombok.Value;
 
 
 public class Kub implements Povorotable{
@@ -38,8 +39,8 @@ public class Kub implements Povorotable{
     public void shaderProgramChanged(SimpleShaderProgram shaderProgram){
         kubDrawer.setProgram(shaderProgram);
     }
-    public void onTouch(float[] coord,float[] matrix,float[] monitorMatrix,int event){
-        kubController.command(coord, matrix, monitorMatrix, event);
+    public void onTouch(float[] matrix, float[] monitorMatrix, TouchEvent event){
+        kubController.command(matrix, monitorMatrix, event);
     }
     public void shuffle(){
         Random random=new Random(System.currentTimeMillis());
@@ -66,5 +67,13 @@ public class Kub implements Povorotable{
         state.ugol = state.ugol + dUgol * sign;
         if (Math.abs(state.ugol) >= 90) state.nextPovorot();
         kubDrawer.draw(state);
+    }
+
+    // MotionEvents is buffered in android pool
+    @Value
+    public static class TouchEvent{
+        float x;
+        float y;
+        int actionMasked;
     }
 }
