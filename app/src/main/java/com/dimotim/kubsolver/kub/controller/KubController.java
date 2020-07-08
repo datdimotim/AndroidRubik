@@ -7,6 +7,9 @@ import com.dimotim.kubsolver.kub.Kub;
 import com.dimotim.kubsolver.kub.MatrixInitializer;
 import com.dimotim.kubsolver.kub.Povorotable;
 
+import lombok.AllArgsConstructor;
+import lombok.Value;
+
 
 public class KubController {
     private final float[][] matrix= MatrixInitializer.initMatrix();
@@ -18,10 +21,12 @@ public class KubController {
     private final float[] startMatrix = new float[16];
     private boolean inKub = false;
 
-    public KubController(int n, Kub kub) {
+    public KubController(int n, Povorotable kub) {
         this.n = n;
         this.kub = kub;
     }
+
+
 
     public void command(float[] matrix, float[] monitorMatrix, Kub.TouchEvent event) {
         float[] coord={event.getX(),event.getY()};
@@ -293,28 +298,22 @@ public class KubController {
         return true;
     }
 
+    @Value
+    @AllArgsConstructor
     private static class Point2d {
-        float x, y;
-
-        Point2d(float x, float y) {
-            this.x = x;
-            this.y = y;
-        }
+        float x;
+        float y;
 
         Point2d(float[] m) {
-            x = m[0];
-            y = m[1];
+            this(m[0],m[1]);
         }
     }
 
+    @Value
     private static class Rotating {
-        private final int gran, i, j, napr;
-
-        Rotating(int gran, int i, int j, int napr) {
-            this.gran = gran;
-            this.i = i;
-            this.j = j;
-            this.napr = napr;
-        }
+        int gran;
+        int i;
+        int j;
+        int napr;
     }
 }

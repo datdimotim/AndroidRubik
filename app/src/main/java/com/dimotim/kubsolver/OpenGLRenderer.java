@@ -6,6 +6,7 @@ import android.opengl.GLSurfaceView.Renderer;
 import android.opengl.Matrix;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 import android.view.View;
 
 import com.dimotim.kubsolver.kub.Kub;
@@ -19,6 +20,8 @@ import java.util.Arrays;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
+
+import lombok.Value;
 
 import static android.opengl.GLES20.GL_COLOR_BUFFER_BIT;
 import static android.opengl.GLES20.GL_DEPTH_BUFFER_BIT;
@@ -118,8 +121,8 @@ public class OpenGLRenderer implements Renderer, View.OnTouchListener {
             };
         }else {
             pers=new float[]{
-                    (float) (1 / tan(alpha)), 0, 0, 0,
-                    0, (float) (1 / (tan(alpha))*aspect), 0, 0,
+                    (float) (1 / tan(alpha))*0.7f, 0, 0, 0,
+                    0, (float) (1 / (tan(alpha))*aspect)*0.7f, 0, 0,
                     0, 0, (ll + l) / (ll - l), 1,
                     0, 0, -2 * ll * l / (ll - l), 0
             };
@@ -249,18 +252,9 @@ public class OpenGLRenderer implements Renderer, View.OnTouchListener {
             }
         });
     }
-
+    @Value
     public static class State implements Serializable {
-        private final com.dimotim.kubsolver.kub.State kubState;
-        private final float[] viewMatrix;
-
-        public State(com.dimotim.kubsolver.kub.State kubState, float[] viewMatrix) {
-            this.kubState = kubState;
-            this.viewMatrix = viewMatrix;
-        }
-
-        public com.dimotim.kubsolver.kub.State getKubState() {
-            return new com.dimotim.kubsolver.kub.State(kubState);
-        }
+        com.dimotim.kubsolver.kub.State kubState;
+        float[] viewMatrix;
     }
 }

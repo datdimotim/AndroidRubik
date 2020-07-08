@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -49,57 +50,35 @@ public class MainActivity extends AppCompatActivity{
         glSurfaceView.setEGLContextClientVersion(2);
 
         OpenGLRenderer.State state=restoreState(savedInstanceState);
-        renderer=new OpenGLRenderer(glSurfaceView, bitmap, vertexShaderText, fragmentShaderText, state, new OpenGLRenderer.KubChangeListener() {
-            @Override
-            public void kubChanged(int size) {
-                Log.i(TAG,"kub="+size);
-                if(size==3){
-                    findViewById(R.id.buttonSolve).setVisibility(View.VISIBLE);
-                    findViewById(R.id.buttonEdit).setVisibility(View.VISIBLE);
-                }else if(size==2){
-                    findViewById(R.id.buttonSolve).setVisibility(View.VISIBLE);
-                    findViewById(R.id.buttonEdit).setVisibility(View.GONE);
-                }
-                else {
-                    findViewById(R.id.buttonSolve).setVisibility(View.GONE);
-                    findViewById(R.id.buttonEdit).setVisibility(View.GONE);
-                }
-                Log.i(TAG,"state="+(findViewById(R.id.buttonSolve).getVisibility()==View.VISIBLE));
+        renderer=new OpenGLRenderer(glSurfaceView, bitmap, vertexShaderText, fragmentShaderText, state, size -> {
+            Log.i(TAG,"kub="+size);
+            if(size==3){
+                findViewById(R.id.buttonSolve).setVisibility(View.VISIBLE);
+                findViewById(R.id.buttonEdit).setVisibility(View.VISIBLE);
+            }else if(size==2){
+                findViewById(R.id.buttonSolve).setVisibility(View.VISIBLE);
+                findViewById(R.id.buttonEdit).setVisibility(View.GONE);
             }
+            else {
+                findViewById(R.id.buttonSolve).setVisibility(View.GONE);
+                findViewById(R.id.buttonEdit).setVisibility(View.GONE);
+            }
+            Log.i(TAG,"state="+(findViewById(R.id.buttonSolve).getVisibility()==View.VISIBLE));
         });
         glSurfaceView.setRenderer(renderer);
-
         glSurfaceView.setOnTouchListener(renderer);
 
 
-        LinearLayout layout=(LinearLayout)findViewById(R.id.panel);
+        LinearLayout layout= findViewById(R.id.panel);
         layout.addView(glSurfaceView);
 
-        findViewById(R.id.buttonNewCube).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new DialogNewKub().show(getFragmentManager(),"DLG1");
-            }
-        });
-        findViewById(R.id.buttonShuffle).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new DialogAreYouSureShuffle().show(getFragmentManager(),"DLG2");
-            }
-        });
-        findViewById(R.id.buttonSolve).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                renderer.solve();
-            }
-        });
-        findViewById(R.id.buttonEdit).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent=new Intent();
-                intent.setClass(MainActivity.this, SolverActivity.class);
-                startActivityForResult(intent,1);
-            }
+        findViewById(R.id.buttonNewCube).setOnClickListener(v -> new DialogNewKub().show(getFragmentManager(),"DLG1"));
+        findViewById(R.id.buttonShuffle).setOnClickListener(v -> new DialogAreYouSureShuffle().show(getFragmentManager(),"DLG2"));
+        findViewById(R.id.buttonSolve).setOnClickListener(v -> renderer.solve());
+        findViewById(R.id.buttonEdit).setOnClickListener(v -> {
+            Intent intent=new Intent();
+            intent.setClass(MainActivity.this, SolverActivity.class);
+            startActivityForResult(intent,1);
         });
     }
 
