@@ -31,7 +31,7 @@
 
         <Button
             android:layout_width="fill_parent"
-            android:layout_height="67dp"
+            android:layout_height="fill_parent"
             android:text="@string/buttonPlusText"
             android:id="@+id/buttonNewCube"
             android:layout_marginTop="0dp"
@@ -42,7 +42,7 @@
             android:visibility="gone"
             android:text="@string/solve"
             android:layout_width="fill_parent"
-            android:layout_height="67dp"
+            android:layout_height="fill_parent"
             android:id="@+id/buttonSolve"
             android:layout_weight="1"
             android:layout_marginTop="0dp"
@@ -53,7 +53,7 @@
             android:visibility="gone"
             android:text="@string/edit"
             android:layout_width="fill_parent"
-            android:layout_height="67dp"
+            android:layout_height="fill_parent"
             android:id="@+id/buttonEdit"
             android:layout_weight="1"
             android:layout_marginTop="0dp"
@@ -63,7 +63,7 @@
 
         <Button
             android:layout_width="fill_parent"
-            android:layout_height="67dp"
+            android:layout_height="fill_parent"
             android:text="@string/buttonShuffleText"
             android:id="@+id/buttonShuffle"
             android:layout_marginTop="0dp"

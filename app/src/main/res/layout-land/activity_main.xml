@@ -37,8 +37,8 @@
             android:weightSum="1">
 
             <Button
-                android:layout_width="match_parent"
-                android:layout_height="80dp"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
                 android:text="@string/buttonShuffleText"
                 android:id="@+id/buttonShuffle"
                 android:layout_marginLeft="0dp"
@@ -46,15 +46,15 @@
                  />
 
             <Button
-                android:layout_width="match_parent"
-                android:layout_height="80dp"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
                 android:text="@string/buttonPlusText"
                 android:id="@+id/buttonNewCube"
                 android:layout_marginLeft="0dp"
                 android:layout_marginTop="0dp" />
             <Button
-                android:layout_width="match_parent"
-                android:layout_height="80dp"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
                 android:text="@string/solve"
                 android:id="@+id/buttonSolve"
                 android:layout_marginLeft="0dp"
@@ -63,8 +63,8 @@
 
             <Button
                 android:text="@string/edit"
-                android:layout_width="match_parent"
-                android:layout_height="80dp"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
                 android:id="@+id/buttonEdit"
                 android:layout_marginLeft="0dp"
                 android:layout_marginTop="0dp"
