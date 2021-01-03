@@ -214,7 +214,7 @@ public class OpenGLRenderer implements Renderer, View.OnTouchListener {
         glSurfaceView.queueEvent(() -> kub.shuffle());
     }
 
-    public void solve() {
+    public void solve(SolveDialog.SolveEntry solveEntry) {
         glSurfaceView.queueEvent(() -> {
             com.dimotim.kubsolver.kub.State state = kub.getState();
             if (state.isRotating()) return;
@@ -224,7 +224,8 @@ public class OpenGLRenderer implements Renderer, View.OnTouchListener {
                 grani = FormatConverter.normalizeGrani(grani);
                 try {
                     long st = System.currentTimeMillis();
-                    Solution solution = Solvers.getSolvers().kubSolver.solve(new com.dimotim.kubSolver.Kub(grani));
+                    com.dimotim.kubSolver.Kub uzor = new com.dimotim.kubSolver.Kub(false).apply(new Solution(1, solveEntry.getHods()));
+                    Solution solution = Solvers.getSolvers().uzorSolver.apply(new com.dimotim.kubSolver.Kub(grani), uzor);
                     Log.i(TAG, "Solution= " + solution);
                     Log.i(TAG, "Solution time= " + (System.currentTimeMillis() - st) + " ms");
 

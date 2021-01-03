@@ -24,7 +24,7 @@ import com.sting_serializer.StringSerializer;
 
 import java.io.IOException;
 
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity implements SolveDialog.SolveListener {
     public static final String KUB_STATE="KUB_STATE";
     public static final String TAG="kubApp";
     private Bitmap bitmap;
@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity{
 
         findViewById(R.id.buttonNewCube).setOnClickListener(v -> new DialogNewKub().show(getFragmentManager(),"DLG1"));
         findViewById(R.id.buttonShuffle).setOnClickListener(v -> new DialogAreYouSureShuffle().show(getFragmentManager(),"DLG2"));
-        findViewById(R.id.buttonSolve).setOnClickListener(v -> renderer.solve());
+        findViewById(R.id.buttonSolve).setOnClickListener(v -> new SolveDialog().show(getFragmentManager(), "DLG3"));
         findViewById(R.id.buttonEdit).setOnClickListener(v -> {
             Intent intent=new Intent();
             intent.setClass(MainActivity.this, SolverActivity.class);
@@ -203,6 +203,11 @@ public class MainActivity extends AppCompatActivity{
             }
         }
         return state;
+    }
+
+    @Override
+    public void onSolve(SolveDialog.SolveEntry solveEntry) {
+        renderer.solve(solveEntry);
     }
 }
 
