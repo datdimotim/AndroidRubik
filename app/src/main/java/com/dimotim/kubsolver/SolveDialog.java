@@ -53,7 +53,7 @@ public class SolveDialog extends DialogFragment {
     private static List<SolveEntry> getEntries(){
         return Arrays.asList(
                 new SolveEntry(new int[]{},"solved"),
-                new SolveEntry(new int[]{1,4,10}, "uzor")
+                new SolveEntry(new int[]{6,12,1,12,1,16,6,2,11,2,4,9,5,1,10,17}, "uzor")
         );
     }
 
