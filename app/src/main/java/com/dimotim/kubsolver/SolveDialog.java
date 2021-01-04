@@ -10,8 +10,13 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.dimotim.kubSolver.Kub;
+import com.dimotim.kubSolver.Solution;
+import com.dimotim.kubSolver.Uzors;
+
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import lombok.Value;
 
@@ -51,11 +56,9 @@ public class SolveDialog extends DialogFragment {
     }
 
     private static List<SolveEntry> getEntries(){
-        return Arrays.asList(
-                new SolveEntry(new int[]{},"solved"),
-                new SolveEntry(new int[]{6,12,1,12,1,16,6,2,11,2,4,9,5,1,10,17}, "corners"),
-                new SolveEntry(new int[]{16,1,10,7,13,4,3,15,9,6,18,6,9,17,2,12}, "dots")
-        );
+        return Uzors.getInstance().getUzors().entrySet().stream()
+                .map(kv -> new SolveEntry(kv.getKey(), kv.getValue()))
+                .collect(Collectors.toList());
     }
 
     public interface SolveListener{
@@ -64,8 +67,8 @@ public class SolveDialog extends DialogFragment {
 
     @Value
     public static class SolveEntry{
-        int[] hods;
         String label;
+        Solution solution;
 
         @Override
         public String toString(){
