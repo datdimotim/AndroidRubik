@@ -14,12 +14,12 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.dimotim.kubsolver.shaderUtils.FileUtils;
+import com.dimotim.kubsolver.updatecheck.CheckForUpdatesHttpClient;
 import com.sting_serializer.StringSerializer;
 
 import java.io.IOException;
@@ -39,6 +39,20 @@ public class MainActivity extends AppCompatActivity implements SolveDialog.Solve
             finish();
             return;
         }
+
+        System.out.println(Thread.currentThread().getName());
+        CheckForUpdatesHttpClient.checkForUpdates(
+                getApplicationContext(),
+                res -> {
+                    System.out.println("result received");
+                    System.out.println(Thread.currentThread().getName());
+                    System.out.println(res);
+                },
+                err -> {
+                    System.out.println("error");
+                    System.out.println(err);
+                }
+        );
 
         bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.texture);
         String vertexShaderText = FileUtils.readTextFromRaw(this, R.raw.vertexshader);
