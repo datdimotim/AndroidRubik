@@ -3,7 +3,6 @@ package com.dimotim.kubsolver.updatecheck;
 import android.content.Context;
 
 import com.google.gson.Gson;
-import com.google.gson.annotations.SerializedName;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.FileAsyncHttpResponseHandler;
@@ -41,7 +40,7 @@ public class CheckForUpdatesHttpClient {
                 String body = new String(responseBody, StandardCharsets.UTF_8);
                 try {
                     ReleaseModel release = gson.fromJson(body, ReleaseModel.class);
-                    List<ReleaseModel.Assets> kubikApks = release.assets.stream()
+                    List<ReleaseModel.Assets> kubikApks = release.getAssets().stream()
                             .filter(f -> f.getName().toLowerCase().trim().startsWith("kubik"))
                             .collect(Collectors.toList());
 
@@ -84,26 +83,6 @@ public class CheckForUpdatesHttpClient {
 
     private static String getAbsoluteUrl(String relativeUrl) {
         return BASE_URL + relativeUrl;
-    }
-
-    @Value
-    public static class ReleaseModel {
-        @SerializedName("created_at")
-        String createdAt;
-        @SerializedName("published_at")
-        String publishedAt;
-        @SerializedName("tag_name")
-        String tagName;
-        List<Assets> assets;
-
-        @Value
-        public static class Assets {
-            String name;
-            @SerializedName("content_type")
-            String contentType;
-            @SerializedName("browser_download_url")
-            String browserDownloadUrl;
-        }
     }
 
     @Value

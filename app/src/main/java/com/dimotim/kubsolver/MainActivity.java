@@ -20,9 +20,13 @@ import android.widget.Toast;
 
 import com.dimotim.kubsolver.shaderUtils.FileUtils;
 import com.dimotim.kubsolver.updatecheck.CheckForUpdatesHttpClient;
+import com.dimotim.kubsolver.updatecheck.HttpClient;
+import com.dimotim.kubsolver.updatecheck.SchedulerProvider;
 import com.sting_serializer.StringSerializer;
 
 import java.io.IOException;
+
+import io.reactivex.disposables.Disposable;
 
 public class MainActivity extends AppCompatActivity implements SolveDialog.SolveListener {
     public static final String KUB_STATE="KUB_STATE";
@@ -40,7 +44,19 @@ public class MainActivity extends AppCompatActivity implements SolveDialog.Solve
             return;
         }
 
-        System.out.println(Thread.currentThread().getName());
+        Disposable disposable = HttpClient.getCheckForUpdateService()
+                .getLatestRelease()
+                .observeOn(SchedulerProvider.ui())
+                .subscribeOn(SchedulerProvider.io())
+                .subscribe(
+                        success -> {
+                            Toast.makeText(this, "new version: "+success.getTagName(), Toast.LENGTH_LONG).show();
+                        },
+                        error -> {
+                            Toast.makeText(this, error.toString(),Toast.LENGTH_LONG).show();
+                        }
+                );
+
         CheckForUpdatesHttpClient.checkForUpdates(
                 getApplicationContext(),
                 res -> {
