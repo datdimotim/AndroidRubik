@@ -86,14 +86,6 @@ public class CheckForUpdatesHttpClient {
     }
 
     @Value
-    public static class CheckResult{
-        String createdAt;
-        String publishedAt;
-        String tagName;
-        String downloadUrl;
-    }
-
-    @Value
     public static class RequestError {
         String message;
         Throwable error;

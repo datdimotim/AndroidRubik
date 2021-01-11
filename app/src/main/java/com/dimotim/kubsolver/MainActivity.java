@@ -22,6 +22,7 @@ import com.dimotim.kubsolver.shaderUtils.FileUtils;
 import com.dimotim.kubsolver.updatecheck.CheckForUpdatesHttpClient;
 import com.dimotim.kubsolver.updatecheck.HttpClient;
 import com.dimotim.kubsolver.updatecheck.SchedulerProvider;
+import com.dimotim.kubsolver.updatecheck.UpdatesUtil;
 import com.sting_serializer.StringSerializer;
 
 import java.io.IOException;
@@ -46,6 +47,7 @@ public class MainActivity extends AppCompatActivity implements SolveDialog.Solve
 
         Disposable disposable = HttpClient.getCheckForUpdateService()
                 .getLatestRelease()
+                .map(UpdatesUtil::parseCheckResultFromGithubResponse)
                 .observeOn(SchedulerProvider.ui())
                 .subscribeOn(SchedulerProvider.io())
                 .subscribe(
@@ -57,18 +59,6 @@ public class MainActivity extends AppCompatActivity implements SolveDialog.Solve
                         }
                 );
 
-        CheckForUpdatesHttpClient.checkForUpdates(
-                getApplicationContext(),
-                res -> {
-                    System.out.println("result received");
-                    System.out.println(Thread.currentThread().getName());
-                    System.out.println(res);
-                },
-                err -> {
-                    System.out.println("error");
-                    System.out.println(err);
-                }
-        );
 
         bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.texture);
         String vertexShaderText = FileUtils.readTextFromRaw(this, R.raw.vertexshader);
