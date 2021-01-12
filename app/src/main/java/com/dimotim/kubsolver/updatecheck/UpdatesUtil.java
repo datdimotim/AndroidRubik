@@ -1,5 +1,7 @@
 package com.dimotim.kubsolver.updatecheck;
 
+import com.dimotim.kubsolver.BuildConfig;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,8 +20,13 @@ public class UpdatesUtil {
                     release.getCreatedAt(),
                     release.getPublishedAt(),
                     release.getTagName(),
+                    kubikApks.get(0).getName(),
                     kubikApks.get(0).getBrowserDownloadUrl()
             );
         }
+    }
+
+    public static boolean isDifferentVersion(CheckResult checkResult){
+        return checkResult.getApkName().contains(BuildConfig.gitHash);
     }
 }
