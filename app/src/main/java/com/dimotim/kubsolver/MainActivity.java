@@ -57,26 +57,11 @@ public class MainActivity extends AppCompatActivity implements SolveDialog.Solve
                 .subscribeOn(SchedulerProvider.io())
                 .subscribe(
                         success -> {
-                            Toast.makeText(this, "new version: "+success.getTagName(), Toast.LENGTH_LONG).show();
-                            BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
-                            Bitmap bitmap = barcodeEncoder.encodeBitmap(success.getDownloadUrl(), BarcodeFormat.QR_CODE, 400, 400);
+                            YesNoDialog.showDialog(this, "install update?", ()->{
+                                QRCodeAlertDialog.showDialog(this, success.getDownloadUrl());
+                                OpenUrlIntent.showDialog(this, success.getDownloadUrl());
+                            });
 
-                            ImageView image = new ImageView(this);
-                            image.setImageBitmap(bitmap);
-
-                            AlertDialog.Builder builder =
-                                    new AlertDialog.Builder(this).
-                                            setMessage("Message above the image").
-                                            setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                                @Override
-                                                public void onClick(DialogInterface dialog, int which) {
-                                                    dialog.dismiss();
-                                                }
-                                            }).
-                                            setView(image);
-                            builder.create().show();
-
-                            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(success.getDownloadUrl())));
                         },
                         error -> {
                             Toast.makeText(this, error.toString(),Toast.LENGTH_LONG).show();
