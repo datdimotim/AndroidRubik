@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity implements SolveDialog.Solve
                 .subscribeOn(SchedulerProvider.io())
                 .subscribe(
                         success -> {
-                            if(!UpdatesUtil.isDifferentVersion(success))return;
+                            if(UpdatesUtil.isSameVersion(success))return;
 
                             YesNoDialog.showDialog(this, "New version "+success.getTagName()+" available, install update?", ()->{
                                 QRCodeAlertDialog.showDialog(this, success.getDownloadUrl());
