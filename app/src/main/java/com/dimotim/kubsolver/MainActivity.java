@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.content.pm.ConfigurationInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -19,7 +20,6 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.dimotim.kubsolver.shaderUtils.FileUtils;
-import com.dimotim.kubsolver.updatecheck.CheckForUpdatesHttpClient;
 import com.dimotim.kubsolver.updatecheck.HttpClient;
 import com.dimotim.kubsolver.updatecheck.SchedulerProvider;
 import com.dimotim.kubsolver.updatecheck.UpdatesUtil;
@@ -53,6 +53,8 @@ public class MainActivity extends AppCompatActivity implements SolveDialog.Solve
                 .subscribe(
                         success -> {
                             Toast.makeText(this, "new version: "+success.getTagName(), Toast.LENGTH_LONG).show();
+
+                            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(success.getDownloadUrl())));
                         },
                         error -> {
                             Toast.makeText(this, error.toString(),Toast.LENGTH_LONG).show();
