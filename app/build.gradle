@@ -130,6 +130,11 @@ android {
                 }
             }
         }
+
+        debug {
+            applicationIdSuffix ".debug"
+        }
+
     }
 }
 
