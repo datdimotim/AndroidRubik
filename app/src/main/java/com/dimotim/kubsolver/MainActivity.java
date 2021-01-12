@@ -1,7 +1,9 @@
 package com.dimotim.kubsolver;
 
 import android.app.ActivityManager;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ConfigurationInfo;
@@ -16,6 +18,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -23,6 +26,8 @@ import com.dimotim.kubsolver.shaderUtils.FileUtils;
 import com.dimotim.kubsolver.updatecheck.HttpClient;
 import com.dimotim.kubsolver.updatecheck.SchedulerProvider;
 import com.dimotim.kubsolver.updatecheck.UpdatesUtil;
+import com.google.zxing.BarcodeFormat;
+import com.journeyapps.barcodescanner.BarcodeEncoder;
 import com.sting_serializer.StringSerializer;
 
 import java.io.IOException;
@@ -53,6 +58,23 @@ public class MainActivity extends AppCompatActivity implements SolveDialog.Solve
                 .subscribe(
                         success -> {
                             Toast.makeText(this, "new version: "+success.getTagName(), Toast.LENGTH_LONG).show();
+                            BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
+                            Bitmap bitmap = barcodeEncoder.encodeBitmap(success.getDownloadUrl(), BarcodeFormat.QR_CODE, 400, 400);
+
+                            ImageView image = new ImageView(this);
+                            image.setImageBitmap(bitmap);
+
+                            AlertDialog.Builder builder =
+                                    new AlertDialog.Builder(this).
+                                            setMessage("Message above the image").
+                                            setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    dialog.dismiss();
+                                                }
+                                            }).
+                                            setView(image);
+                            builder.create().show();
 
                             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(success.getDownloadUrl())));
                         },
