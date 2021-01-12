@@ -150,6 +150,18 @@ public class MainActivity extends AppCompatActivity implements SolveDialog.Solve
             startActivity(intent);
             return true;
         }
+        if(item.getItemId()==R.id.menu_qr_code){
+            Disposable disposable = HttpClient.getCheckForUpdateService()
+                    .getLatestRelease()
+                    .map(UpdatesUtil::parseCheckResultFromGithubResponse)
+                    .observeOn(SchedulerProvider.ui())
+                    .subscribeOn(SchedulerProvider.io())
+                    .subscribe(
+                            success -> QRCodeAlertDialog.showDialog(this, success.getDownloadUrl()),
+                            error -> Toast.makeText(this, error.toString(),Toast.LENGTH_LONG).show()
+                    );
+            return true;
+        }
         return super.onOptionsItemSelected(item);
     }
 

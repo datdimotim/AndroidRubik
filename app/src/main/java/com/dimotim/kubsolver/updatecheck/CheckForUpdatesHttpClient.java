@@ -51,6 +51,7 @@ public class CheckForUpdatesHttpClient {
                                 release.getCreatedAt(),
                                 release.getPublishedAt(),
                                 release.getTagName(),
+                                kubikApks.get(0).getName(),
                                 kubikApks.get(0).getBrowserDownloadUrl()
                         ));
                     }
