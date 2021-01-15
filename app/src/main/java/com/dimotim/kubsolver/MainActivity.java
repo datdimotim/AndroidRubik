@@ -1,33 +1,32 @@
 package com.dimotim.kubsolver;
 
 import android.app.ActivityManager;
-import android.app.AlertDialog;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.content.pm.ConfigurationInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.dimotim.kubsolver.services.CheckUpdateService;
 import com.dimotim.kubsolver.shaderUtils.FileUtils;
 import com.dimotim.kubsolver.updatecheck.HttpClient;
 import com.dimotim.kubsolver.updatecheck.SchedulerProvider;
 import com.dimotim.kubsolver.updatecheck.UpdatesUtil;
-import com.google.zxing.BarcodeFormat;
-import com.journeyapps.barcodescanner.BarcodeEncoder;
 import com.sting_serializer.StringSerializer;
 
 import java.io.IOException;
@@ -49,6 +48,8 @@ public class MainActivity extends AppCompatActivity implements SolveDialog.Solve
             finish();
             return;
         }
+
+        setupCheckForUpdatesAlarm();
 
         Disposable disposable = HttpClient.getCheckForUpdateService()
                 .getLatestRelease()
@@ -219,6 +220,28 @@ public class MainActivity extends AppCompatActivity implements SolveDialog.Solve
         ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
         ConfigurationInfo configurationInfo = activityManager.getDeviceConfigurationInfo();
         return (configurationInfo.reqGlEsVersion >= 0x20000);
+    }
+
+    private void setupCheckForUpdatesAlarm(){
+        Intent intent=new Intent(this, CheckUpdateService.class);
+        intent.setAction("checkUpdateService");
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        PendingIntent pendingIntent = PendingIntent.getService(
+                this,
+                123,
+                intent,
+                PendingIntent.FLAG_CANCEL_CURRENT
+        );
+
+        final long interval = 10000;
+
+        alarmManager.setExact(
+                AlarmManager.ELAPSED_REALTIME,
+                SystemClock.elapsedRealtime() + interval,
+                //interval,
+                pendingIntent
+        );
+        Log.d(MainActivity.class.getCanonicalName(),"alart was set up");
     }
 
     @Override
