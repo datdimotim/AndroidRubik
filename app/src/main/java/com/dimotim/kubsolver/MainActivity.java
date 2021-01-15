@@ -19,7 +19,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.dimotim.kubsolver.services.BootReceiver;
-import com.dimotim.kubsolver.services.CheckUpdateService;
+import com.dimotim.kubsolver.services.CheckUpdateReceiver;
 import com.dimotim.kubsolver.shaderUtils.FileUtils;
 import com.dimotim.kubsolver.updatecheck.HttpClient;
 import com.dimotim.kubsolver.updatecheck.SchedulerProvider;
@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity implements SolveDialog.Solve
         }
 
         BootReceiver.enableBootReceiver(this);
-        CheckUpdateService.setupRepeatingCheck(this);
+        CheckUpdateReceiver.setupRepeatingCheck(this);
 
         Disposable disposable = HttpClient.getCheckForUpdateService()
                 .getLatestRelease()

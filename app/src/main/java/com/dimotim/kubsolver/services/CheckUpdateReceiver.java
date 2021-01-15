@@ -2,34 +2,26 @@ package com.dimotim.kubsolver.services;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
-import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.os.IBinder;
 import android.os.SystemClock;
 import android.util.Log;
 import android.widget.Toast;
 
-public class CheckUpdateService extends Service {
-    public CheckUpdateService() {
-    }
+public class CheckUpdateReceiver extends BroadcastReceiver {
 
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        Toast.makeText(this, "CheckForUpdate", Toast.LENGTH_LONG).show();
-        return super.onStartCommand(intent, flags, startId);
-    }
-
-    @Override
-    public IBinder onBind(Intent intent) {
-        // TODO: Return the communication channel to the service.
-        throw new UnsupportedOperationException("Not yet implemented");
+    public void onReceive(Context context, Intent intent) {
+        Toast.makeText(context, "Check for update", Toast.LENGTH_LONG).show();
+        Log.d(BootReceiver.class.getCanonicalName(), "Check for update");
     }
 
     public static void setupRepeatingCheck(Context context){
-        Intent intent=new Intent(context, CheckUpdateService.class);
+        Intent intent=new Intent(context, CheckUpdateReceiver.class);
+        intent.setAction("android.alarm.receiver");
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        PendingIntent pendingIntent = PendingIntent.getService(
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(
                 context,
                 123,
                 intent,
@@ -44,6 +36,6 @@ public class CheckUpdateService extends Service {
                 interval,
                 pendingIntent
         );
-        Log.d(CheckUpdateService.class.getCanonicalName(),"alart was set up");
+        Log.d(CheckUpdateReceiver.class.getCanonicalName(),"alarm was set up");
     }
 }
