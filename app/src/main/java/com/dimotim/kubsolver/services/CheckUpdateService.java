@@ -40,7 +40,7 @@ public class CheckUpdateService extends Service {
 
         alarmManager.setRepeating(
                 AlarmManager.ELAPSED_REALTIME,
-                SystemClock.elapsedRealtime() + interval,
+                SystemClock.elapsedRealtime() + 10000,
                 interval,
                 pendingIntent
         );
