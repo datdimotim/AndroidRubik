@@ -13,7 +13,7 @@ public class CheckUpdateReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Toast.makeText(context, "Check for update", Toast.LENGTH_LONG).show();
+        //Toast.makeText(context, "Check for update", Toast.LENGTH_LONG).show();
         Log.d(BootReceiver.class.getCanonicalName(), "Check for update");
     }
 

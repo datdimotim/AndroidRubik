@@ -12,7 +12,7 @@ public class BootReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Toast.makeText(context, "boot receiver receive: "+intent.getAction(), Toast.LENGTH_LONG).show();
+        //Toast.makeText(context, "boot receiver receive: "+intent.getAction(), Toast.LENGTH_LONG).show();
         Log.d(BootReceiver.class.getCanonicalName(), "BootCompleted handled, setup repeatable alarm");
         CheckUpdateReceiver.setupRepeatingCheck(context);
     }
