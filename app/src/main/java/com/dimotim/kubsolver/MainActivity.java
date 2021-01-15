@@ -1,18 +1,14 @@
 package com.dimotim.kubsolver;
 
 import android.app.ActivityManager;
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.content.pm.ConfigurationInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -49,7 +45,7 @@ public class MainActivity extends AppCompatActivity implements SolveDialog.Solve
             return;
         }
 
-        setupCheckForUpdatesAlarm();
+        CheckUpdateService.setupRepeatingCheck(this);
 
         Disposable disposable = HttpClient.getCheckForUpdateService()
                 .getLatestRelease()
@@ -220,28 +216,6 @@ public class MainActivity extends AppCompatActivity implements SolveDialog.Solve
         ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
         ConfigurationInfo configurationInfo = activityManager.getDeviceConfigurationInfo();
         return (configurationInfo.reqGlEsVersion >= 0x20000);
-    }
-
-    private void setupCheckForUpdatesAlarm(){
-        Intent intent=new Intent(this, CheckUpdateService.class);
-        intent.setAction("checkUpdateService");
-        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        PendingIntent pendingIntent = PendingIntent.getService(
-                this,
-                123,
-                intent,
-                PendingIntent.FLAG_CANCEL_CURRENT
-        );
-
-        final long interval = 10000;
-
-        alarmManager.setExact(
-                AlarmManager.ELAPSED_REALTIME,
-                SystemClock.elapsedRealtime() + interval,
-                //interval,
-                pendingIntent
-        );
-        Log.d(MainActivity.class.getCanonicalName(),"alart was set up");
     }
 
     @Override
