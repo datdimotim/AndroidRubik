@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 import com.dimotim.kubsolver.services.BootReceiver;
 import com.dimotim.kubsolver.services.CheckUpdateReceiver;
+import com.dimotim.kubsolver.services.UpdateAvailableNotification;
 import com.dimotim.kubsolver.shaderUtils.FileUtils;
 import com.dimotim.kubsolver.updatecheck.HttpClient;
 import com.dimotim.kubsolver.updatecheck.SchedulerProvider;
@@ -59,7 +60,6 @@ public class MainActivity extends AppCompatActivity implements SolveDialog.Solve
                             if(UpdatesUtil.isSameVersion(success))return;
 
                             YesNoDialog.showDialog(this, "New version "+success.getTagName()+" available, install update?", ()->{
-                                QRCodeAlertDialog.showDialog(this, success.getDownloadUrl());
                                 OpenUrlIntent.showDialog(this, success.getDownloadUrl());
                             });
 
