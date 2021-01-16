@@ -50,27 +50,6 @@ public class MainActivity extends AppCompatActivity implements SolveDialog.Solve
         BootReceiver.enableBootReceiver(this);
         CheckUpdateReceiver.setupRepeatingCheck(this);
 
-        Disposable disposable = HttpClient.getCheckForUpdateService()
-                .getLatestRelease()
-                .map(UpdatesUtil::parseCheckResultFromGithubResponse)
-                .observeOn(SchedulerProvider.ui())
-                .subscribeOn(SchedulerProvider.io())
-                .subscribe(
-                        success -> {
-                            if(UpdatesUtil.isSameVersion(success))return;
-
-                            YesNoDialog.showDialog(this, "New version "+success.getTagName()+" available, install update?", ()->{
-                                OpenUrlIntent.showDialog(this, success.getDownloadUrl());
-                            });
-
-                        },
-                        error -> {
-                            //Toast.makeText(this, error.toString(),Toast.LENGTH_LONG).show();
-                            Log.d(MainActivity.class.getCanonicalName(), error.toString());
-                        }
-                );
-
-
         bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.texture);
         String vertexShaderText = FileUtils.readTextFromRaw(this, R.raw.vertexshader);
         final String fragmentShaderText = FileUtils.readTextFromRaw(this, R.raw.pixelshader);
@@ -162,6 +141,32 @@ public class MainActivity extends AppCompatActivity implements SolveDialog.Solve
                     );
             return true;
         }
+
+        if(item.getItemId()==R.id.menu_check_for_updates){
+            Disposable disposable = HttpClient.getCheckForUpdateService()
+                    .getLatestRelease()
+                    .map(UpdatesUtil::parseCheckResultFromGithubResponse)
+                    .observeOn(SchedulerProvider.ui())
+                    .subscribeOn(SchedulerProvider.io())
+                    .subscribe(
+                            success -> {
+                                if(UpdatesUtil.isSameVersion(success)){
+                                    Toast.makeText(this, "This version is actual",Toast.LENGTH_LONG).show();
+                                    return;
+                                }
+
+                                YesNoDialog.showDialog(this, "New version "+success.getTagName()+" available, install update?", ()->{
+                                    OpenUrlIntent.showDialog(this, success.getDownloadUrl());
+                                });
+
+                            },
+                            error -> {
+                                Toast.makeText(this, error.toString(),Toast.LENGTH_LONG).show();
+                                Log.d(MainActivity.class.getCanonicalName(), error.toString());
+                            }
+                    );
+        }
+
         return super.onOptionsItemSelected(item);
     }
 
