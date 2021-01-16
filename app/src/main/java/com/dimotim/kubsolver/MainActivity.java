@@ -18,9 +18,13 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.dimotim.kubsolver.dialogs.DialogAreYouSureShuffle;
+import com.dimotim.kubsolver.dialogs.DialogNewKub;
+import com.dimotim.kubsolver.dialogs.QRCodeAlertDialog;
+import com.dimotim.kubsolver.dialogs.SolveDialog;
+import com.dimotim.kubsolver.dialogs.YesNoDialog;
 import com.dimotim.kubsolver.services.BootReceiver;
 import com.dimotim.kubsolver.services.CheckUpdateReceiver;
-import com.dimotim.kubsolver.services.UpdateAvailableNotification;
 import com.dimotim.kubsolver.shaderUtils.FileUtils;
 import com.dimotim.kubsolver.updatecheck.HttpClient;
 import com.dimotim.kubsolver.updatecheck.SchedulerProvider;
@@ -189,15 +193,10 @@ public class MainActivity extends AppCompatActivity implements SolveDialog.Solve
         super.onPause();
         Log.i(TAG,"onPause");
         glSurfaceView.onPause();
-        //state=renderer.getState();
     }
     protected void onResume() {
         super.onResume();
         Log.i(TAG,"onResume");
-        //if(state!=null){
-            //renderer.setState(state);
-            //state=null;
-        //}
         glSurfaceView.onResume();
     }
     @Override

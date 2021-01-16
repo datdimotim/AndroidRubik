@@ -1,6 +1,8 @@
 package com.dimotim.kubsolver.updatecheck;
 
 import com.dimotim.kubsolver.BuildConfig;
+import com.dimotim.kubsolver.updatecheck.model.CheckResult;
+import com.dimotim.kubsolver.updatecheck.model.ReleaseModel;
 
 import java.util.List;
 import java.util.stream.Collectors;

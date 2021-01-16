@@ -6,9 +6,9 @@ import android.opengl.GLSurfaceView.Renderer;
 import android.opengl.Matrix;
 import android.util.Log;
 import android.view.MotionEvent;
-import android.view.ScaleGestureDetector;
 import android.view.View;
 
+import com.dimotim.kubsolver.dialogs.SolveDialog;
 import com.dimotim.kubsolver.kub.Kub;
 import com.dimotim.kubSolver.Kub2x2;
 import com.dimotim.kubSolver.Solution;
@@ -36,7 +36,6 @@ import static android.opengl.GLES20.glEnable;
 import static android.opengl.GLES20.glUniform1i;
 import static android.opengl.GLES20.glUniformMatrix4fv;
 import static android.opengl.GLES20.glUseProgram;
-import static android.opengl.GLES20.glViewport;
 import static java.lang.Math.tan;
 
 public class OpenGLRenderer implements Renderer, View.OnTouchListener {

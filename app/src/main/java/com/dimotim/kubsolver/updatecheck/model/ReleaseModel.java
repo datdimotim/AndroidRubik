@@ -1,4 +1,4 @@
-package com.dimotim.kubsolver.updatecheck;
+package com.dimotim.kubsolver.updatecheck.model;
 
 import com.google.gson.annotations.SerializedName;
 

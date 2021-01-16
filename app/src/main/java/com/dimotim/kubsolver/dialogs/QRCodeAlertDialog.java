@@ -1,4 +1,4 @@
-package com.dimotim.kubsolver;
+package com.dimotim.kubsolver.dialogs;
 
 import android.app.AlertDialog;
 import android.content.Context;

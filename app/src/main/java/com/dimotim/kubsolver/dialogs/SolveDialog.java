@@ -1,4 +1,4 @@
-package com.dimotim.kubsolver;
+package com.dimotim.kubsolver.dialogs;
 
 import android.app.DialogFragment;
 import android.content.Context;
@@ -13,6 +13,7 @@ import android.widget.ListView;
 import com.dimotim.kubSolver.Kub;
 import com.dimotim.kubSolver.Solution;
 import com.dimotim.kubSolver.Uzors;
+import com.dimotim.kubsolver.R;
 
 import java.util.Arrays;
 import java.util.List;

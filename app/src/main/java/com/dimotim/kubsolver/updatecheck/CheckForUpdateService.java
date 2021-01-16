@@ -1,5 +1,7 @@
 package com.dimotim.kubsolver.updatecheck;
 
+import com.dimotim.kubsolver.updatecheck.model.ReleaseModel;
+
 import io.reactivex.Single;
 import retrofit2.http.GET;
 import retrofit2.http.Headers;
