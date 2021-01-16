@@ -23,6 +23,7 @@ public class UpdatesUtil {
                     release.getPublishedAt(),
                     release.getTagName(),
                     kubikApks.get(0).getName(),
+                    release.getHtmllUrl(),
                     kubikApks.get(0).getBrowserDownloadUrl()
             );
         }

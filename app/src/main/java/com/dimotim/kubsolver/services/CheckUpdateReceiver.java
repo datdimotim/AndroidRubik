@@ -32,7 +32,7 @@ public class CheckUpdateReceiver extends BroadcastReceiver {
                                 Log.d(CheckUpdateReceiver.class.getCanonicalName(), "version is same: "+success);
                                 return;
                             }
-                            UpdateAvailableNotification.show(context, success.getTagName(), success.getDownloadUrl());
+                            UpdateAvailableNotification.show(context, success.getTagName(), success.getHtmlUrl());
 
                         },
                         error -> {

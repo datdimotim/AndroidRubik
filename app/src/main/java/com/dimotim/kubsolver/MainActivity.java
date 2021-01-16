@@ -140,7 +140,7 @@ public class MainActivity extends AppCompatActivity implements SolveDialog.Solve
                     .observeOn(SchedulerProvider.ui())
                     .subscribeOn(SchedulerProvider.io())
                     .subscribe(
-                            success -> QRCodeAlertDialog.showDialog(this, success.getDownloadUrl()),
+                            success -> QRCodeAlertDialog.showDialog(this, success.getHtmlUrl()),
                             error -> Toast.makeText(this, error.toString(),Toast.LENGTH_LONG).show()
                     );
             return true;
@@ -160,7 +160,7 @@ public class MainActivity extends AppCompatActivity implements SolveDialog.Solve
                                 }
 
                                 YesNoDialog.showDialog(this, "New version "+success.getTagName()+" available, install update?", ()->{
-                                    OpenUrlIntent.showDialog(this, success.getDownloadUrl());
+                                    OpenUrlIntent.showDialog(this, success.getHtmlUrl());
                                 });
 
                             },

@@ -8,5 +8,6 @@ public class CheckResult {
     String publishedAt;
     String tagName;
     String apkName;
+    String htmlUrl;
     String downloadUrl;
 }

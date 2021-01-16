@@ -14,6 +14,8 @@ public class ReleaseModel {
     String publishedAt;
     @SerializedName("tag_name")
     String tagName;
+    @SerializedName("html_url")
+    String htmllUrl;
     List<Assets> assets;
 
     @Value
