@@ -65,7 +65,8 @@ public class MainActivity extends AppCompatActivity implements SolveDialog.Solve
 
                         },
                         error -> {
-                            Toast.makeText(this, error.toString(),Toast.LENGTH_LONG).show();
+                            //Toast.makeText(this, error.toString(),Toast.LENGTH_LONG).show();
+                            Log.d(MainActivity.class.getCanonicalName(), error.toString());
                         }
                 );
 
