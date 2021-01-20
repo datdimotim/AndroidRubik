@@ -97,13 +97,21 @@ githubRelease {
 android {
     compileSdkVersion 28
     defaultConfig {
-        applicationId "com.dimotim.kubSolver.kubsolver"
+        applicationId "com.dimotim.kubsolver"
         minSdkVersion 24
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         buildConfigField "String", "gitHash", "\""+buildSing+"\""
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = [
+                        "resourcePackageName": "com.dimotim.kubsolver"
+                ]
+            }
+        }
     }
 
     compileOptions {
@@ -161,6 +169,10 @@ dependencies {
     implementation 'com.google.zxing:core:3.3.0'
 
     implementation 'com.google.code.gson:gson:2.8.5'
+
+    annotationProcessor "org.androidannotations:androidannotations:4.8.0"
+    implementation "org.androidannotations:androidannotations-api:4.8.0"
+
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'

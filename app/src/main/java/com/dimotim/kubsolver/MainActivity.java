@@ -31,19 +31,34 @@ import com.dimotim.kubsolver.updatecheck.SchedulerProvider;
 import com.dimotim.kubsolver.updatecheck.UpdatesUtil;
 import com.sting_serializer.StringSerializer;
 
+import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.Click;
+import org.androidannotations.annotations.EActivity;
+import org.androidannotations.annotations.OptionsItem;
+import org.androidannotations.annotations.OptionsMenu;
+import org.androidannotations.annotations.ViewById;
+import org.androidannotations.annotations.res.DrawableRes;
+
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import io.reactivex.disposables.Disposable;
+import lombok.Value;
 
+@EActivity(resName = "activity_main")
+@OptionsMenu(resName = "main_menu")
 public class MainActivity extends AppCompatActivity implements SolveDialog.SolveListener {
     public static final String KUB_STATE="KUB_STATE";
     public static final String TAG="kubApp";
+
     private Bitmap bitmap;
-    private GLSurfaceView glSurfaceView;
+    @ViewById(resName = "panel")
+    protected GLSurfaceView glSurfaceView;
     public OpenGLRenderer renderer;
 
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    @AfterViews
+    protected void setup() {
         Log.i(TAG,"onCreate");
         if (!supportES2()) {
             Toast.makeText(this, "OpenGl ES 2.0 is not supported", Toast.LENGTH_LONG).show();
@@ -58,12 +73,9 @@ public class MainActivity extends AppCompatActivity implements SolveDialog.Solve
         String vertexShaderText = FileUtils.readTextFromRaw(this, R.raw.vertexshader);
         final String fragmentShaderText = FileUtils.readTextFromRaw(this, R.raw.pixelshader);
 
-        setContentView(R.layout.activity_main);
-
-        glSurfaceView = new GLSurfaceView(this);
         glSurfaceView.setEGLContextClientVersion(2);
 
-        OpenGLRenderer.State state=restoreState(savedInstanceState);
+        OpenGLRenderer.State state= null;//restoreState(savedInstanceState);
         renderer=new OpenGLRenderer(glSurfaceView, bitmap, vertexShaderText, fragmentShaderText, state, size -> {
             Log.i(TAG,"kub="+size);
             if(size==3){
@@ -82,96 +94,94 @@ public class MainActivity extends AppCompatActivity implements SolveDialog.Solve
         glSurfaceView.setRenderer(renderer);
         glSurfaceView.setOnTouchListener(renderer);
 
-
-        LinearLayout layout= findViewById(R.id.panel);
-        layout.addView(glSurfaceView);
-
-        findViewById(R.id.buttonNewCube).setOnClickListener(v -> new DialogNewKub().show(getFragmentManager(),"DLG1"));
-        findViewById(R.id.buttonShuffle).setOnClickListener(v -> new DialogAreYouSureShuffle().show(getFragmentManager(),"DLG2"));
-        findViewById(R.id.buttonSolve).setOnClickListener(v -> new SolveDialog().show(getFragmentManager(), "DLG3"));
-        findViewById(R.id.buttonEdit).setOnClickListener(v -> {
-            Intent intent=new Intent();
-            intent.setClass(MainActivity.this, SolverActivity.class);
-            startActivityForResult(intent,1);
-        });
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main_menu, menu);
-        return true;
+    @Click(resName = "buttonNewCube")
+    void onButtonNewCube(){
+        new DialogNewKub().show(getFragmentManager(),"DLG1");
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId()==R.id.menu_benchmark1vs100){
-            Intent intent=new Intent(this,BenchmarkActivity.class);
-            intent.putExtra(BenchmarkActivity.THREADS,1);
-            intent.putExtra(BenchmarkActivity.SIZE,100);
-            startActivity(intent);
-            return true;
-        }
-        if(item.getItemId()==R.id.menu_benchmark8vs1000){
-            Intent intent=new Intent(this,BenchmarkActivity.class);
-            intent.putExtra(BenchmarkActivity.THREADS,8);
-            intent.putExtra(BenchmarkActivity.SIZE,1000);
-            startActivity(intent);
-            return true;
-        }
-        if(item.getItemId()==R.id.menu_benchmark1vs1000){
-            Intent intent=new Intent(this,BenchmarkActivity.class);
-            intent.putExtra(BenchmarkActivity.THREADS,1);
-            intent.putExtra(BenchmarkActivity.SIZE,1000);
-            startActivity(intent);
-            return true;
-        }
-        if(item.getItemId()==R.id.menu_benchmark8vs10000){
-            Intent intent=new Intent(this,BenchmarkActivity.class);
-            intent.putExtra(BenchmarkActivity.THREADS,8);
-            intent.putExtra(BenchmarkActivity.SIZE,10000);
-            startActivity(intent);
-            return true;
-        }
-        if(item.getItemId()==R.id.menu_qr_code){
-            Disposable disposable = HttpClient.getCheckForUpdateService()
-                    .getLatestRelease()
-                    .map(UpdatesUtil::parseCheckResultFromGithubResponse)
-                    .observeOn(SchedulerProvider.ui())
-                    .subscribeOn(SchedulerProvider.io())
-                    .subscribe(
-                            success -> QRCodeAlertDialog.showDialog(this, success.getHtmlUrl()),
-                            error -> Toast.makeText(this, error.toString(),Toast.LENGTH_LONG).show()
-                    );
-            return true;
-        }
+    @Click(resName = "buttonShuffle")
+    void onButtonShuffle(){
+        new DialogAreYouSureShuffle().show(getFragmentManager(),"DLG2");
+    }
 
-        if(item.getItemId()==R.id.menu_check_for_updates){
-            Disposable disposable = HttpClient.getCheckForUpdateService()
-                    .getLatestRelease()
-                    .map(UpdatesUtil::parseCheckResultFromGithubResponse)
-                    .observeOn(SchedulerProvider.ui())
-                    .subscribeOn(SchedulerProvider.io())
-                    .subscribe(
-                            success -> {
-                                if(UpdatesUtil.isSameVersion(success)){
-                                    Toast.makeText(this, "This version is actual",Toast.LENGTH_LONG).show();
-                                    return;
-                                }
+    @Click(resName = "buttonSolve")
+    void onButtonSolve(){
+        new SolveDialog().show(getFragmentManager(), "DLG3");
+    }
 
-                                YesNoDialog.showDialog(this, "New version "+success.getTagName()+" available, install update?", ()->{
-                                    OpenUrlIntent.showDialog(this, success.getHtmlUrl());
-                                });
+    @Click(resName = "buttonEdit")
+    void onButtonEdit(){
+        Intent intent=new Intent();
+        intent.setClass(MainActivity.this, SolverActivity.class);
+        startActivityForResult(intent,1);
+    }
 
-                            },
-                            error -> {
-                                Toast.makeText(this, error.toString(),Toast.LENGTH_LONG).show();
-                                Log.d(MainActivity.class.getCanonicalName(), error.toString());
+    private final Map<Integer, BenchmarkConfig> benchmarkParams = new HashMap<Integer, BenchmarkConfig>(){{
+        put(R.id.menu_benchmark1vs100, new BenchmarkConfig(1,100));
+        put(R.id.menu_benchmark8vs1000, new BenchmarkConfig(8,1000));
+        put(R.id.menu_benchmark1vs1000, new BenchmarkConfig(1,1000));
+        put(R.id.menu_benchmark8vs10000, new BenchmarkConfig(8,10000));
+    }};
+
+    @Value
+    private static class BenchmarkConfig{
+        int threads;
+        int count;
+    }
+
+    @OptionsItem(resName = {
+            "menu_benchmark1vs100",
+            "menu_benchmark8vs1000",
+            "menu_benchmark1vs1000",
+            "menu_benchmark8vs10000",
+    })
+    void menuBenchmark(MenuItem item){
+        BenchmarkConfig config = benchmarkParams.get(item.getItemId());
+        Intent intent=new Intent(this,BenchmarkActivity.class);
+        intent.putExtra(BenchmarkActivity.THREADS,config.getThreads());
+        intent.putExtra(BenchmarkActivity.SIZE,config.getCount());
+        startActivity(intent);
+    }
+
+    @OptionsItem(resName = "menu_qr_code")
+    void menuQrCode(){
+        Disposable disposable = HttpClient.getCheckForUpdateService()
+                .getLatestRelease()
+                .map(UpdatesUtil::parseCheckResultFromGithubResponse)
+                .observeOn(SchedulerProvider.ui())
+                .subscribeOn(SchedulerProvider.io())
+                .subscribe(
+                        success -> QRCodeAlertDialog.showDialog(this, success.getHtmlUrl()),
+                        error -> Toast.makeText(this, error.toString(),Toast.LENGTH_LONG).show()
+                );
+    }
+
+    @OptionsItem(resName = "menu_check_for_updates")
+    void menuCheckForUpdates(){
+        Disposable disposable = HttpClient.getCheckForUpdateService()
+                .getLatestRelease()
+                .map(UpdatesUtil::parseCheckResultFromGithubResponse)
+                .observeOn(SchedulerProvider.ui())
+                .subscribeOn(SchedulerProvider.io())
+                .subscribe(
+                        success -> {
+                            if(UpdatesUtil.isSameVersion(success)){
+                                Toast.makeText(this, "This version is actual",Toast.LENGTH_LONG).show();
+                                return;
                             }
-                    );
-        }
 
-        return super.onOptionsItemSelected(item);
+                            YesNoDialog.showDialog(this, "New version "+success.getTagName()+" available, install update?", ()->{
+                                OpenUrlIntent.showDialog(this, success.getHtmlUrl());
+                            });
+
+                        },
+                        error -> {
+                            Toast.makeText(this, error.toString(),Toast.LENGTH_LONG).show();
+                            Log.d(MainActivity.class.getCanonicalName(), error.toString());
+                        }
+                );
     }
 
     @Override
