@@ -11,11 +11,9 @@ import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.dimotim.kubsolver.dialogs.DialogAreYouSureShuffle;
@@ -36,8 +34,8 @@ import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.OptionsItem;
 import org.androidannotations.annotations.OptionsMenu;
+import org.androidannotations.annotations.Touch;
 import org.androidannotations.annotations.ViewById;
-import org.androidannotations.annotations.res.DrawableRes;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -50,9 +48,8 @@ import lombok.Value;
 @OptionsMenu(resName = "main_menu")
 public class MainActivity extends AppCompatActivity implements SolveDialog.SolveListener {
     public static final String KUB_STATE="KUB_STATE";
-    public static final String TAG="kubApp";
+    public static final String TAG=MainActivity.class.getCanonicalName();
 
-    private Bitmap bitmap;
     @ViewById(resName = "panel")
     protected GLSurfaceView glSurfaceView;
     public OpenGLRenderer renderer;
@@ -69,8 +66,8 @@ public class MainActivity extends AppCompatActivity implements SolveDialog.Solve
         BootReceiver.enableBootReceiver(this);
         CheckUpdateReceiver.setupRepeatingCheck(this);
 
-        bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.texture);
-        String vertexShaderText = FileUtils.readTextFromRaw(this, R.raw.vertexshader);
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.texture);
+        final String vertexShaderText = FileUtils.readTextFromRaw(this, R.raw.vertexshader);
         final String fragmentShaderText = FileUtils.readTextFromRaw(this, R.raw.pixelshader);
 
         glSurfaceView.setEGLContextClientVersion(2);
@@ -92,9 +89,13 @@ public class MainActivity extends AppCompatActivity implements SolveDialog.Solve
             Log.i(TAG,"state="+(findViewById(R.id.buttonSolve).getVisibility()==View.VISIBLE));
         });
         glSurfaceView.setRenderer(renderer);
-        glSurfaceView.setOnTouchListener(renderer);
-
     }
+
+    @Touch(resName = "panel")
+    void onTouchSurfaceView(View v, MotionEvent event){
+        renderer.onTouch(v, event);
+    }
+
 
     @Click(resName = "buttonNewCube")
     void onButtonNewCube(){
@@ -199,16 +200,20 @@ public class MainActivity extends AppCompatActivity implements SolveDialog.Solve
         renderer.setNewKub(grani);
     }
 
+    @Override
     protected void onPause() {
         super.onPause();
         Log.i(TAG,"onPause");
         glSurfaceView.onPause();
     }
+
+    @Override
     protected void onResume() {
         super.onResume();
         Log.i(TAG,"onResume");
         glSurfaceView.onResume();
     }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -226,7 +231,6 @@ public class MainActivity extends AppCompatActivity implements SolveDialog.Solve
             editor.putString(KUB_STATE, save);
             editor.apply();
         }
-        bitmap.recycle();
     }
 
     private boolean supportES2() {
