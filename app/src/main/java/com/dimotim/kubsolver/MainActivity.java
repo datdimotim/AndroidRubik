@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
@@ -54,6 +55,14 @@ public class MainActivity extends AppCompatActivity implements SolveDialog.Solve
     protected GLSurfaceView glSurfaceView;
     public OpenGLRenderer renderer;
 
+    private OpenGLRenderer.State savedInitialState;
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        savedInitialState= restoreState(savedInstanceState);
+    }
+
     @AfterViews
     protected void setup() {
         Log.i(TAG,"onCreate");
@@ -72,7 +81,7 @@ public class MainActivity extends AppCompatActivity implements SolveDialog.Solve
 
         glSurfaceView.setEGLContextClientVersion(2);
 
-        OpenGLRenderer.State state= null;//restoreState(savedInstanceState);
+        OpenGLRenderer.State state = savedInitialState;
         renderer=new OpenGLRenderer(glSurfaceView, bitmap, vertexShaderText, fragmentShaderText, state, size -> {
             Log.i(TAG,"kub="+size);
             if(size==3){
