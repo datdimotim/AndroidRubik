@@ -149,10 +149,11 @@ public class MainActivity extends AppCompatActivity implements SolveDialog.Solve
     })
     void menuBenchmark(MenuItem item){
         BenchmarkConfig config = benchmarkParams.get(item.getItemId());
-        Intent intent=new Intent(this,BenchmarkActivity.class);
-        intent.putExtra(BenchmarkActivity.THREADS,config.getThreads());
-        intent.putExtra(BenchmarkActivity.SIZE,config.getCount());
-        startActivity(intent);
+
+        BenchmarkActivity_.intent(this)
+                .threads(config.getThreads())
+                .size(config.getCount())
+                .start();
     }
 
     @OptionsItem(resName = "menu_qr_code")

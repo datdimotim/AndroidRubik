@@ -34,7 +34,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".BenchmarkActivity"
+            android:name=".BenchmarkActivity_"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.NoActionBar">
             <intent-filter>

@@ -1,17 +1,20 @@
 package com.dimotim.kubsolver;
 
-import android.content.Intent;
 import android.os.AsyncTask;
-import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.dimotim.kubSolver.Kub;
 import com.dimotim.kubSolver.KubSolver;
 import com.dimotim.kubSolver.Solution;
+
+import org.androidannotations.annotations.AfterInject;
+import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.Click;
+import org.androidannotations.annotations.EActivity;
+import org.androidannotations.annotations.Extra;
+import org.androidannotations.annotations.ViewById;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -22,33 +25,34 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-
+@EActivity(resName = "benchmark_layout")
 public class BenchmarkActivity extends AppCompatActivity {
-    public static final String TAG="BenchmarkActivity: ";
-    public static final String THREADS="THREADS";
-    public static final String SIZE="SIZE";
+
     private Benchmark benchmark;
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.benchmark_layout);
-        Intent intent=getIntent();
-        final int threads=intent.getIntExtra(THREADS,-1);
-        if(threads==-1)throw new RuntimeException();
-        final int size=intent.getIntExtra(SIZE,-1);
-        if(size==-1)throw new RuntimeException();
+
+    @ViewById(resName = "version")
+    protected TextView versionTextView;
+
+    @Extra("THREADS")
+    protected int threads;
+
+    @Extra("THREADS")
+    protected int size;
+
+    @AfterViews
+    protected void init() {
+
         benchmark=new Benchmark(this,threads,size);
-        TextView versionTextView= findViewById(R.id.version);
+
         versionTextView.setText(versionTextView.getText()+BuildConfig.gitHash);
-        findViewById(R.id.button_cancel).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                benchmark.cancel(false);
-                finish();
-            }
-        });
 
         benchmark.execute();
+    }
+
+    @Click(resName = "button_cancel")
+    void onCancel() {
+        benchmark.cancel(false);
+        finish();
     }
 
     @Override
