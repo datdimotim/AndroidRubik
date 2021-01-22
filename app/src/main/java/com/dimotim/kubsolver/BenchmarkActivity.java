@@ -1,6 +1,5 @@
 package com.dimotim.kubsolver;
 
-import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -9,11 +8,12 @@ import com.dimotim.kubSolver.Kub;
 import com.dimotim.kubSolver.KubSolver;
 import com.dimotim.kubSolver.Solution;
 
-import org.androidannotations.annotations.AfterInject;
 import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.Extra;
+import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
 
 import java.util.List;
@@ -21,6 +21,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -28,10 +29,21 @@ import java.util.stream.IntStream;
 @EActivity(resName = "benchmark_layout")
 public class BenchmarkActivity extends AppCompatActivity {
 
-    private Benchmark benchmark;
+    private final AtomicBoolean isCancelled = new AtomicBoolean(false);
+
+    private final KubSolver<?,?> kubSolver= Solvers.getSolvers().kubSolver;
 
     @ViewById(resName = "version")
     protected TextView versionTextView;
+
+    @ViewById(resName = "progressBar")
+    protected ProgressBar progressBar;
+
+    @ViewById(resName = "text_view_percent")
+    protected TextView percentTextView;
+
+    @ViewById(resName = "title_text_view")
+    protected TextView titleTextView;
 
     @Extra("THREADS")
     protected int threads;
@@ -41,46 +53,21 @@ public class BenchmarkActivity extends AppCompatActivity {
 
     @AfterViews
     protected void init() {
-
-        benchmark=new Benchmark(this,threads,size);
-
         versionTextView.setText(versionTextView.getText()+BuildConfig.gitHash);
-
-        benchmark.execute();
+        isCancelled.set(false);
+        benchmark();
     }
 
     @Click(resName = "button_cancel")
     void onCancel() {
-        benchmark.cancel(false);
+        isCancelled.set(true);
         finish();
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        benchmark.cancel(false);
-    }
-}
-
-class Benchmark extends AsyncTask<Void,Integer,float[]>{
-    private final ExecutorService es;
-    private final int size;
-    private final Controls controls;
-    private final KubSolver<?,?> kubSolver= Solvers.getSolvers().kubSolver;
-
-    Benchmark(AppCompatActivity activity,int threads,int size){
-        this.size=size;
-        es=Executors.newFixedThreadPool(threads);
-        controls=new Controls(activity);
-    }
-
-    @Override
-    protected void onPreExecute() {
-        onProgressUpdate(0);
-    }
-
-    @Override
-    protected float[] doInBackground(Void... params) {
+    @Background
+    void benchmark(){
+        ExecutorService es=Executors.newFixedThreadPool(threads);
+        updateProgress(0);
         final long timeStart=System.currentTimeMillis();
         AtomicInteger solutionLenght = new AtomicInteger(0);
 
@@ -91,7 +78,7 @@ class Benchmark extends AsyncTask<Void,Integer,float[]>{
                     Solution solution = kubSolver.solve(new Kub(true));
 
                     int curProg = progress.incrementAndGet();
-                    publishProgress((int)(100*curProg/(float) size));
+                    updateProgress((int)(100*curProg/(float) size));
                     solutionLenght.addAndGet(solution.getLength());
                     return solution;
                 }))
@@ -99,10 +86,11 @@ class Benchmark extends AsyncTask<Void,Integer,float[]>{
 
         try {
             for(Future<Solution> task:tasks){
-                if(isCancelled())return new float[]{0,0};
+                if(isCancelled.get())return;
                 task.get();
             }
-            return new float[]{(System.currentTimeMillis()-timeStart)/(float)1000,solutionLenght.get()/(float) size};
+
+            showResults((System.currentTimeMillis()-timeStart)/(float)1000,solutionLenght.get()/(float) size);
         }catch (ExecutionException|InterruptedException e){
             throw new RuntimeException(e);
         }finally {
@@ -110,36 +98,25 @@ class Benchmark extends AsyncTask<Void,Integer,float[]>{
         }
     }
 
-    @Override
-    protected void onProgressUpdate(Integer... values) {
-        controls.progressBar.setProgress(values[0]);
-        controls.percent.setText(values[0]+"%");
+    @UiThread
+    void updateProgress(int percent){
+        progressBar.setProgress(percent);
+        percentTextView.setText(percent+"%");
+    }
+
+    @UiThread
+    void showResults(float timeSeconds, float avgLength){
+        progressBar.setProgress(100);
+        percentTextView.setText(100+"%");
+        titleTextView.setText(
+                "Total time="+timeSeconds+"s\n" +
+                        "Avg size="+avgLength);
     }
 
     @Override
-    protected void onPostExecute(float[] floats) {
-        if(isCancelled()){
-            controls.activity.finish();
-            return;
-        }
-        controls.progressBar.setProgress(100);
-        controls.percent.setText(100+"%");
-        controls.title.setText(
-                        "Total time="+floats[0]+"s\n" +
-                        "Avg size="+floats[1]);
-    }
-
-    private static class Controls{
-        final AppCompatActivity activity;
-        final ProgressBar progressBar;
-        final TextView percent;
-        final TextView title;
-        Controls(AppCompatActivity activity){
-            this.activity=activity;
-            progressBar= (ProgressBar) activity.findViewById(R.id.progressBar);
-            percent=(TextView)activity.findViewById(R.id.text_view_percent);
-            title=(TextView)activity.findViewById(R.id.title_text_view);
-        }
+    protected void onDestroy() {
+        super.onDestroy();
+        isCancelled.set(true);
     }
 }
 
