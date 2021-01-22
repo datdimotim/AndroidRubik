@@ -1,4 +1,5 @@
 package com.dimotim.kubsolver;
+
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -10,16 +11,16 @@ import android.widget.TextView;
 
 import com.dimotim.kubSolver.Kub;
 import com.dimotim.kubSolver.KubSolver;
-import com.dimotim.kubSolver.solvers.SimpleSolver1;
-import com.dimotim.kubSolver.solvers.SimpleSolver2;
-import com.dimotim.kubSolver.tables.SymTables;
+import com.dimotim.kubSolver.Solution;
 
-import java.util.ArrayList;
-import java.util.concurrent.Callable;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 
 public class BenchmarkActivity extends AppCompatActivity {
@@ -77,33 +78,29 @@ class Benchmark extends AsyncTask<Void,Integer,float[]>{
     @Override
     protected float[] doInBackground(Void... params) {
         final long timeStart=System.currentTimeMillis();
-        int solutionLenght=0;
+        AtomicInteger solutionLenght = new AtomicInteger(0);
 
-        final ArrayList<Callable<Integer>> taskList=new ArrayList<>(size);
-        for(int i = 0; i< size; i++)taskList.add(new Callable<Integer>() {
-            private final Kub kub=new Kub(true);
-            @Override
-            public Integer call(){
-                return kubSolver.solve(kub).getLength();
-            }
-        });
+        AtomicInteger progress = new AtomicInteger(0);
 
-        ArrayList<Future<Integer>> resultList=new ArrayList<>(size);
-        for(Callable<Integer> task:taskList)resultList.add(es.submit(task));
+        List<Future<Solution>> tasks = IntStream.range(0,size)
+                .mapToObj(i -> es.submit(()->{
+                    Solution solution = kubSolver.solve(new Kub(true));
+
+                    int curProg = progress.incrementAndGet();
+                    publishProgress((int)(100*curProg/(float) size));
+                    solutionLenght.addAndGet(solution.getLength());
+                    return solution;
+                }))
+                .collect(Collectors.toList());
 
         try {
-            for(int i = 0; i< size; i++){
-                if(isCancelled())break;
-                solutionLenght+=resultList.get(i).get();
-                publishProgress((int)(100*i/(float) size));
-            }
+            for(Future<Solution> task:tasks)task.get();
+            return new float[]{(System.currentTimeMillis()-timeStart)/(float)1000,solutionLenght.get()/(float) size};
         }catch (ExecutionException|InterruptedException e){
             throw new RuntimeException(e);
         }finally {
             es.shutdownNow();
         }
-
-        return new float[]{(System.currentTimeMillis()-timeStart)/(float)1000,solutionLenght/(float) size};
     }
 
     @Override
