@@ -94,7 +94,10 @@ class Benchmark extends AsyncTask<Void,Integer,float[]>{
                 .collect(Collectors.toList());
 
         try {
-            for(Future<Solution> task:tasks)task.get();
+            for(Future<Solution> task:tasks){
+                if(isCancelled())return new float[]{0,0};
+                task.get();
+            }
             return new float[]{(System.currentTimeMillis()-timeStart)/(float)1000,solutionLenght.get()/(float) size};
         }catch (ExecutionException|InterruptedException e){
             throw new RuntimeException(e);
