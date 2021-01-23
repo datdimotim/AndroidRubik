@@ -31,6 +31,7 @@ import com.dimotim.kubsolver.updatecheck.UpdatesUtil;
 import com.sting_serializer.StringSerializer;
 
 import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.OptionsItem;
@@ -56,6 +57,9 @@ public class MainActivity extends AppCompatActivity implements SolveDialog.Solve
     public OpenGLRenderer renderer;
 
     private OpenGLRenderer.State savedInitialState;
+
+    @Bean
+    protected Solvers solvers;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -96,7 +100,7 @@ public class MainActivity extends AppCompatActivity implements SolveDialog.Solve
                 findViewById(R.id.buttonEdit).setVisibility(View.GONE);
             }
             Log.i(TAG,"state="+(findViewById(R.id.buttonSolve).getVisibility()==View.VISIBLE));
-        });
+        },solvers);
         glSurfaceView.setRenderer(renderer);
     }
 
