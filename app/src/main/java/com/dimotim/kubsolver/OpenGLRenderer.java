@@ -51,6 +51,7 @@ public class OpenGLRenderer implements Renderer, View.OnTouchListener {
     private Kub kub;
     private final GLSurfaceView glSurfaceView;
     private final KubChangeListener kubChangeListener;
+    private final Solvers solvers;
 
     public interface KubChangeListener {
         void kubChanged(int size);
@@ -61,12 +62,14 @@ public class OpenGLRenderer implements Renderer, View.OnTouchListener {
                           String vertexShaderText,
                           String fragmentShaderText,
                           State saveState,
-                          KubChangeListener kubChangeListener) {
+                          KubChangeListener kubChangeListener,
+                          Solvers solvers) {
         this.kubChangeListener = kubChangeListener;
         this.glSurfaceView = glSurfaceView;
         this.bitmap = bitmap;
         this.fragmentShaderText = fragmentShaderText;
         this.vertexShaderText = vertexShaderText;
+        this.solvers=solvers;
         Matrix.setIdentityM(viewMatrix, 0);
 
         if (saveState != null) {
@@ -224,7 +227,7 @@ public class OpenGLRenderer implements Renderer, View.OnTouchListener {
                 try {
                     long st = System.currentTimeMillis();
                     com.dimotim.kubSolver.Kub uzor = new com.dimotim.kubSolver.Kub(false).apply(new Solution(solveEntry.getSolution().getHods()));
-                    Solution solution = Solvers.getSolvers().uzorSolver.apply(new com.dimotim.kubSolver.Kub(grani), uzor);
+                    Solution solution = solvers.getUzorSolver().apply(new com.dimotim.kubSolver.Kub(grani), uzor);
                     Log.i(TAG, "Solution= " + solution);
                     Log.i(TAG, "Solution time= " + (System.currentTimeMillis() - st) + " ms");
 
@@ -242,7 +245,7 @@ public class OpenGLRenderer implements Renderer, View.OnTouchListener {
                 try {
                     long st = System.currentTimeMillis();
                     com.dimotim.kubSolver.Kub2x2 uzor = new com.dimotim.kubSolver.Kub2x2(false).apply(new Solution(solveEntry.getSolution().getHods()));
-                    Solution solution = Solvers.getSolvers().uzor2x2Solver.apply(new Kub2x2(grani), uzor);
+                    Solution solution = solvers.getUzor2x2Solver().apply(new Kub2x2(grani), uzor);
                     Log.i(TAG, "Solution= " + solution);
                     Log.i(TAG, "Solution time= " + (System.currentTimeMillis() - st) + " ms");
 

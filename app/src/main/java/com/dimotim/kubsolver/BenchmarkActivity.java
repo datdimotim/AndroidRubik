@@ -6,11 +6,11 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.dimotim.kubSolver.Kub;
-import com.dimotim.kubSolver.KubSolver;
 import com.dimotim.kubSolver.Solution;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Background;
+import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.Extra;
@@ -32,7 +32,8 @@ public class BenchmarkActivity extends AppCompatActivity {
 
     private final AtomicBoolean isCancelled = new AtomicBoolean(false);
 
-    private final KubSolver<?,?> kubSolver= Solvers.getSolvers().kubSolver;
+    @Bean
+    protected Solvers solvers;
 
     @ViewById(resName = "version")
     protected TextView versionTextView;
@@ -78,7 +79,7 @@ public class BenchmarkActivity extends AppCompatActivity {
         List<Future<?>> tasks = IntStream.range(0,size)
                 .mapToObj(i -> es.submit(()->{
                     if(isCancelled.get())return;
-                    Solution solution = kubSolver.solve(new Kub(true));
+                    Solution solution = solvers.getKubSolver().solve(new Kub(true));
 
                     int curProg = progress.incrementAndGet();
                     updateProgress((int)(100*curProg/(float) size));
