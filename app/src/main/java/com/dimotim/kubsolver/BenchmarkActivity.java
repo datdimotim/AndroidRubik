@@ -1,6 +1,7 @@
 package com.dimotim.kubsolver;
 
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -48,7 +49,7 @@ public class BenchmarkActivity extends AppCompatActivity {
     @Extra("THREADS")
     protected int threads;
 
-    @Extra("THREADS")
+    @Extra("SIZE")
     protected int size;
 
     @AfterViews
@@ -66,6 +67,7 @@ public class BenchmarkActivity extends AppCompatActivity {
 
     @Background
     void benchmark(){
+        Log.d(BenchmarkActivity.class.getCanonicalName(), "threads="+threads+" count="+size);
         ExecutorService es=Executors.newFixedThreadPool(threads);
         updateProgress(0);
         final long timeStart=System.currentTimeMillis();
@@ -73,20 +75,20 @@ public class BenchmarkActivity extends AppCompatActivity {
 
         AtomicInteger progress = new AtomicInteger(0);
 
-        List<Future<Solution>> tasks = IntStream.range(0,size)
+        List<Future<?>> tasks = IntStream.range(0,size)
                 .mapToObj(i -> es.submit(()->{
+                    if(isCancelled.get())return;
                     Solution solution = kubSolver.solve(new Kub(true));
 
                     int curProg = progress.incrementAndGet();
                     updateProgress((int)(100*curProg/(float) size));
                     solutionLenght.addAndGet(solution.getLength());
-                    return solution;
                 }))
                 .collect(Collectors.toList());
 
         try {
-            for(Future<Solution> task:tasks){
-                if(isCancelled.get())return;
+            for(Future<?> task:tasks){
+                if(isCancelled.get()) return;
                 task.get();
             }
 
