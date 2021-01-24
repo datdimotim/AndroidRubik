@@ -130,7 +130,8 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
+            proguardFile 'proguard-rules.txt'
             signingConfig signingConfigs.release
             applicationVariants.all { variant ->
                 variant.outputs.all {
@@ -140,6 +141,8 @@ android {
         }
 
         debug {
+            minifyEnabled true
+            proguardFile 'proguard-rules.txt'
             applicationIdSuffix ".debug"
         }
 

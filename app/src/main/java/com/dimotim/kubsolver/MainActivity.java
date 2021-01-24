@@ -169,7 +169,10 @@ public class MainActivity extends AppCompatActivity implements SolveDialog.Solve
                 .subscribeOn(SchedulerProvider.io())
                 .subscribe(
                         success -> QRCodeAlertDialog.showDialog(this, success.getHtmlUrl()),
-                        error -> Toast.makeText(this, error.toString(),Toast.LENGTH_LONG).show()
+                        error -> {
+                            Toast.makeText(this, error.toString(),Toast.LENGTH_LONG).show();
+                            Log.e(MainActivity.class.getCanonicalName(), error.toString(), error);
+                        }
                 );
     }
 
@@ -194,7 +197,7 @@ public class MainActivity extends AppCompatActivity implements SolveDialog.Solve
                         },
                         error -> {
                             Toast.makeText(this, error.toString(),Toast.LENGTH_LONG).show();
-                            Log.d(MainActivity.class.getCanonicalName(), error.toString());
+                            Log.e(MainActivity.class.getCanonicalName(), error.toString(), error);
                         }
                 );
     }

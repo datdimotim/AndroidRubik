@@ -1,0 +1,50 @@
+###### KUB SOLVER LIB #######
+-keep public class com.dimotim.kubSolver.tables.SymTables
+-keepclassmembers class com.dimotim.kubSolver.tables.SymTables {
+    <fields>;
+}
+-keep public class com.dimotim.kubSolver.tables.FullSymTables2x2
+-keepclassmembers class com.dimotim.kubSolver.tables.FullSymTables2x2 {
+    <fields>;
+}
+-keep public class com.dimotim.kubSolver.tables.SymMoveTable
+-keepclassmembers class com.dimotim.kubSolver.tables.SymMoveTable {
+    <fields>;
+}
+-keep public class com.dimotim.kubSolver.tables.SymDeepTable
+-keepclassmembers class com.dimotim.kubSolver.tables.SymDeepTable {
+    <fields>;
+}
+-keep public class com.dimotim.kubSolver.tables.IntegerMatrix
+-keepclassmembers class com.dimotim.kubSolver.tables.IntegerMatrix {
+    <fields>;
+}
+###### END OF KUB SOLVER LIB #######
+
+
+###### COMPACT ARRAYS LIB #######
+-keep public class com.dimotim.compact_arrays.CompactIntegerArrayShift
+-keepclassmembers class com.dimotim.compact_arrays.CompactIntegerArrayShift {
+    *;
+}
+-keep public class com.dimotim.compact_arrays.IntegerArray
+-keepclassmembers class com.dimotim.compact_arrays.IntegerArray {
+    *;
+}
+###### END OF COMPACT ARRAYS LIB #######
+
+
+###### APP #######
+-keep public class com.dimotim.kubsolver.Solvers
+-keepclassmembers public class com.dimotim.kubsolver.Solvers {
+    *;
+}
+-keep public interface com.dimotim.kubsolver.updatecheck.CheckForUpdateService
+-keepclassmembers public interface com.dimotim.kubsolver.updatecheck.CheckForUpdateService {
+    *;
+}
+-keep class com.dimotim.kubsolver.updatecheck.model.** { *; }
+-keepclassmembers public class io.reactivex.Single{
+    public final blockingGet();
+}
+###### END OF APP #######
