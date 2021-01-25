@@ -75,7 +75,7 @@ tasks.githubRelease.doFirst {
 }
 
 githubRelease {
-    token getProperty('github.token') // This is your personal access token with Repo permissions
+    token findProperty('github.token')?: '' // This is your personal access token with Repo permissions
     // You get this from your user settings > developer settings > Personal Access Tokens
     owner "datdimotim" // default is the last part of your group. Eg group: "com.github.breadmoirai" => owner: "breadmoirai"
     repo "AndroidRubik" // by default this is set to your project name
