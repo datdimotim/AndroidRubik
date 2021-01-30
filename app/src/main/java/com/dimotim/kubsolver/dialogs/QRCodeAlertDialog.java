@@ -18,12 +18,12 @@ public class QRCodeAlertDialog {
             Log.e(QRCodeAlertDialog.class.getCanonicalName(), "build qr code error",e);
         }
 
-        AlertDialog.Builder builder =
-                new AlertDialog.Builder(context).
-                        setMessage(content).
-                        setPositiveButton("OK", (dialog, which) -> dialog.dismiss()).
-                        setView(image);
-        builder.create().show();
+        new AlertDialog.Builder(context)
+                .setMessage(content)
+                .setPositiveButton("OK", (dialog, which) -> dialog.dismiss())
+                .setView(image)
+                .create()
+                .show();
     }
 }
 
