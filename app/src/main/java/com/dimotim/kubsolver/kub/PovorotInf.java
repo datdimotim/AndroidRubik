@@ -2,11 +2,11 @@ package com.dimotim.kubsolver.kub;
 
 import java.io.Serializable;
 
+import lombok.Value;
+
+@Value
 public class PovorotInf implements Serializable{
-    public final int srez;
-    public final int storona;
-    public final int sign;
-    public PovorotInf(int srez,int storona,int sign){
-        this.srez=srez;this.sign=sign;this.storona=storona;
-    }
+    int srez;
+    int storona;
+    int sign;
 }

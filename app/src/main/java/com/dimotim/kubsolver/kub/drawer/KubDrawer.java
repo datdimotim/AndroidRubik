@@ -80,8 +80,8 @@ public class KubDrawer{
         else{
             final float ugol=state.getUgol();
             PovorotInf current=state.getCurrentPovorot();
-            final int storona=current.storona;
-            final int srez=current.srez;
+            final int storona=current.getStorona();
+            final int srez=current.getSrez();
             switch (storona){
                 case 1:{
                     if(srez==1) {

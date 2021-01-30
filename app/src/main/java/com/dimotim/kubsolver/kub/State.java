@@ -5,14 +5,15 @@ import com.dimotim.kubsolver.kub.facelet.Povorot;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.Optional;
 
 public class State implements Serializable {
-    final int n;
+    private final int n;
     private final int[][][] kvColor;
     private transient Object kvHash=new Object();
 
     private final LinkedList<PovorotInf> povorots=new LinkedList<>();
-    float ugol;
+    private float ugol;
 
     State(int[][][] kvColor, int n, float ugol,LinkedList<PovorotInf> povorots) {
         this.kvColor = new int[6][n][n];
@@ -73,11 +74,20 @@ public class State implements Serializable {
         return kvHash;
     }
 
-    void nextPovorot(){
+    public void addUgol(float dUgol){
+        int sign = Optional.ofNullable(getCurrentPovorot())
+                .map(PovorotInf::getSign)
+                .orElse(0);
+
+        ugol += dUgol * sign;
+        if (Math.abs(ugol) >= 90) nextPovorot();
+    }
+
+    private void nextPovorot(){
         if(povorots.isEmpty())return;
-        Povorot.rotate(kvColor, povorots.peekFirst().storona,
-                                povorots.peekFirst().srez,
-                                povorots.peekFirst().sign);
+        Povorot.rotate(kvColor, povorots.peekFirst().getStorona(),
+                                povorots.peekFirst().getSrez(),
+                                povorots.peekFirst().getSign());
         kvHash=new Object();
         ugol = 0;
         povorots.poll();
@@ -85,7 +95,9 @@ public class State implements Serializable {
     public boolean isRotating(){
         return !povorots.isEmpty();
     }
+
     public PovorotInf getCurrentPovorot(){return povorots.peekFirst();}
+
     void addPovorotsInQueue(PovorotInf[] posl){
         Collections.addAll(povorots, posl);
     }
