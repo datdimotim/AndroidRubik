@@ -34,6 +34,7 @@ import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EActivity;
+import org.androidannotations.annotations.OnActivityResult;
 import org.androidannotations.annotations.OptionsItem;
 import org.androidannotations.annotations.OptionsMenu;
 import org.androidannotations.annotations.Touch;
@@ -49,6 +50,7 @@ import lombok.Value;
 @EActivity(resName = "activity_main")
 @OptionsMenu(resName = "main_menu")
 public class MainActivity extends AppCompatActivity implements SolveDialog.SolveListener {
+    public static final int SOLVER_ACTIVITY_RESULT_CODE = 1;
     public static final String KUB_STATE="KUB_STATE";
     public static final String TAG=MainActivity.class.getCanonicalName();
 
@@ -127,9 +129,7 @@ public class MainActivity extends AppCompatActivity implements SolveDialog.Solve
 
     @Click(resName = "buttonEdit")
     void onButtonEdit(){
-        Intent intent=new Intent();
-        intent.setClass(MainActivity.this, SolverActivity.class);
-        startActivityForResult(intent,1);
+        SolverActivity_.intent(this).startForResult(SOLVER_ACTIVITY_RESULT_CODE);
     }
 
     private final Map<Integer, BenchmarkConfig> benchmarkParams = new HashMap<Integer, BenchmarkConfig>(){{
@@ -202,8 +202,8 @@ public class MainActivity extends AppCompatActivity implements SolveDialog.Solve
                 );
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    @OnActivityResult(SOLVER_ACTIVITY_RESULT_CODE)
+    protected void onActivityResult(Intent data) {
         Log.i(TAG,"OnActivityResult");
         if(data==null)return;
         if(data.getStringExtra(SolverActivity.PARAMS.RESULT.toString()).equals(SolverActivity.RESULT.CANCELED.toString()))return;

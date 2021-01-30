@@ -1,12 +1,10 @@
 package com.dimotim.kubsolver;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.View;
@@ -18,15 +16,15 @@ import android.widget.Toast;
 
 import com.commonsware.cwac.layouts.AspectLockedFrameLayout;
 import com.dimotim.kubSolver.Kub;
-import com.dimotim.kubSolver.KubSolver;
-import com.dimotim.kubSolver.solvers.SimpleSolver1;
-import com.dimotim.kubSolver.solvers.SimpleSolver2;
-import com.dimotim.kubSolver.tables.SymTables;
 import com.sting_serializer.StringSerializer;
+
+import org.androidannotations.annotations.AfterInject;
+import org.androidannotations.annotations.Bean;
+import org.androidannotations.annotations.EActivity;
 
 import java.io.IOException;
 
-
+@EActivity
 public class SolverActivity extends AppCompatActivity {
     public enum RESULT{OK,CANCELED}
     public enum PARAMS{RESULT,POSITION}
@@ -37,69 +35,56 @@ public class SolverActivity extends AppCompatActivity {
     private Button solve;
     private Button show;
     private Button back;
-    private KubSolver<SymTables.KubState,SimpleSolver1.SolveState<SymTables.KubState>> kubSolver=null;
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+
+    @Bean
+    protected Solvers solvers;
+
+    @AfterInject
+    protected void onCreate() {
         createUI();
         initListeners();
-
-        kubSolver=  new KubSolver<>(SymTables.readTables(),
-                        new SimpleSolver1<SymTables.KubState>(),
-                        new SimpleSolver2<SymTables.KubState>());
     }
+
     private void initListeners(){
         faceletController=new FaceletController(facelet,sides,selectors);
-        solve.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int[][][] grani=faceletController.getGrani();
-                if(!convertAndTestGraniForCorrect(grani)){
-                    Toast.makeText(SolverActivity.this,"Некорректная позиция",Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                try {
-                    AlertDialog.Builder dialog=new AlertDialog.Builder(SolverActivity.this);
-                    dialog.setTitle(kubSolver.solve(new Kub(grani)).toString()+"");
-                    dialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.cancel();
-                        }
-                    });
-                    dialog.show();
-                } catch (Kub.InvalidPositionException e) {
-                    throw new RuntimeException("incorrect position!!!");
-                }
+        solve.setOnClickListener(v -> {
+            int[][][] grani=faceletController.getGrani();
+            if(!convertAndTestGraniForCorrect(grani)){
+                Toast.makeText(SolverActivity.this,"Некорректная позиция",Toast.LENGTH_SHORT).show();
+                return;
+            }
+            try {
+                AlertDialog.Builder dialog=new AlertDialog.Builder(SolverActivity.this);
+                dialog.setTitle(solvers.getKubSolver().solve(new Kub(grani)).toString()+"");
+                dialog.setPositiveButton("OK", (dialog1, which) -> dialog1.cancel());
+                dialog.show();
+            } catch (Kub.InvalidPositionException e) {
+                throw new RuntimeException("incorrect position!!!");
             }
         });
-        back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent();
-                intent.putExtra(PARAMS.RESULT.toString(), RESULT.CANCELED.toString());
-                setResult(RESULT_OK, intent);
-                finish();
-            }
+
+        back.setOnClickListener(v -> {
+            Intent intent = new Intent();
+            intent.putExtra(PARAMS.RESULT.toString(), RESULT.CANCELED.toString());
+            setResult(RESULT_OK, intent);
+            finish();
         });
-        show.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int[][][] grani=faceletController.getGrani();
-                if(!convertAndTestGraniForCorrect(grani)){
-                    Toast.makeText(SolverActivity.this,"Некорректная позиция",Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                Intent intent = new Intent();
-                intent.putExtra(PARAMS.RESULT.toString(), RESULT.OK.toString());
-                try {
-                    intent.putExtra(PARAMS.POSITION.toString(), StringSerializer.serializeToString(grani));
-                } catch (IOException e) {
-                    throw new RuntimeException("Serialize Error",e);
-                }
-                setResult(RESULT_OK, intent);
-                finish();
+
+        show.setOnClickListener(v -> {
+            int[][][] grani=faceletController.getGrani();
+            if(!convertAndTestGraniForCorrect(grani)){
+                Toast.makeText(SolverActivity.this,"Некорректная позиция",Toast.LENGTH_SHORT).show();
+                return;
             }
+            Intent intent = new Intent();
+            intent.putExtra(PARAMS.RESULT.toString(), RESULT.OK.toString());
+            try {
+                intent.putExtra(PARAMS.POSITION.toString(), StringSerializer.serializeToString(grani));
+            } catch (IOException e) {
+                throw new RuntimeException("Serialize Error",e);
+            }
+            setResult(RESULT_OK, intent);
+            finish();
         });
     }
     private boolean convertAndTestGraniForCorrect(int[][][] grani){
@@ -114,6 +99,7 @@ public class SolverActivity extends AppCompatActivity {
         }
         return true;
     }
+
     private void createUI(){
         LinearLayout root=new LinearLayout(this);
         root.setOrientation(LinearLayout.VERTICAL);
@@ -270,33 +256,13 @@ class FaceletController{
     FaceletController(KubButton[][] facelet, KubButton[] sides, final KubButton[] selectors){
         this.facelet=facelet;
         this.sides=sides;
-        new SelectColorController(selectors, new SelectColorController.OnChangeColorListener() {
-            @Override
-            public void onChangeColor(int newColor) {
-                selectedColor =newColor;
-            }
-        });
+        new SelectColorController(selectors, newColor -> selectedColor =newColor);
         for(int i=0;i<3;i++)for(int j=0;j<3;j++){
             if(i==j&&j==1)continue;
-            facelet[i][j].setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    ((KubButton)v).setColor(selectedColor);
-                }
-            });
+            facelet[i][j].setOnClickListener(v -> ((KubButton)v).setColor(selectedColor));
         }
-        sides[3].setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                changeSide(selectedSide-1);
-            }
-        });
-        sides[1].setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                changeSide(selectedSide+1);
-            }
-        });
+        sides[3].setOnClickListener(v -> changeSide(selectedSide-1));
+        sides[1].setOnClickListener(v -> changeSide(selectedSide+1));
         facelet[1][1].setColor(1);
         grani=new int[6][3][3];
         for(int i=0;i<6;i++)grani[i][1][1]=i+1;

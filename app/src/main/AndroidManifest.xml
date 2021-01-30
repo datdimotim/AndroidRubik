@@ -42,7 +42,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".SolverActivity"
+            android:name=".SolverActivity_"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar">
             <intent-filter>
