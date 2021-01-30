@@ -35,7 +35,7 @@ public class FormatConverter {
                 default:throw new RuntimeException("Incorrect hod");
             }
         }
-        return listHods.toArray(new PovorotInf[listHods.size()]);
+        return listHods.toArray(new PovorotInf[0]);
     }
     public static int[][][] normalizeGrani(int[][][] grani){
         int[][][] graniNorm=new int[6][3][3];

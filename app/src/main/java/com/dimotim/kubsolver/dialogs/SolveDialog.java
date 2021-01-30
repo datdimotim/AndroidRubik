@@ -10,12 +10,10 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import com.dimotim.kubSolver.Kub;
 import com.dimotim.kubSolver.Solution;
 import com.dimotim.kubSolver.Uzors;
 import com.dimotim.kubsolver.R;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 

@@ -25,7 +25,7 @@ public class State implements Serializable {
         this.ugol = ugol;
         this.n = n;
 
-        for (PovorotInf p:povorots)this.povorots.add(p);
+        this.povorots.addAll(povorots);
     }
 
     public State(State state) {
