@@ -16,13 +16,11 @@ import android.widget.Toast;
 
 import com.commonsware.cwac.layouts.AspectLockedFrameLayout;
 import com.dimotim.kubSolver.Kub;
-import com.sting_serializer.StringSerializer;
+import com.dimotim.kubsolver.util.StringSerializer;
 
 import org.androidannotations.annotations.AfterInject;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EActivity;
-
-import java.io.IOException;
 
 @EActivity
 public class SolverActivity extends AppCompatActivity {
@@ -78,11 +76,7 @@ public class SolverActivity extends AppCompatActivity {
             }
             Intent intent = new Intent();
             intent.putExtra(PARAMS.RESULT.toString(), RESULT.OK.toString());
-            try {
-                intent.putExtra(PARAMS.POSITION.toString(), StringSerializer.serializeToString(grani));
-            } catch (IOException e) {
-                throw new RuntimeException("Serialize Error",e);
-            }
+            intent.putExtra(PARAMS.POSITION.toString(), StringSerializer.serializeToString(grani));
             setResult(RESULT_OK, intent);
             finish();
         });

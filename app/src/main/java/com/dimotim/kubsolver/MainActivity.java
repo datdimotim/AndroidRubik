@@ -28,7 +28,7 @@ import com.dimotim.kubsolver.shaderUtils.FileUtils;
 import com.dimotim.kubsolver.updatecheck.HttpClient;
 import com.dimotim.kubsolver.updatecheck.SchedulerProvider;
 import com.dimotim.kubsolver.updatecheck.UpdatesUtil;
-import com.sting_serializer.StringSerializer;
+import com.dimotim.kubsolver.util.StringSerializer;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Bean;
@@ -40,7 +40,6 @@ import org.androidannotations.annotations.OptionsMenu;
 import org.androidannotations.annotations.Touch;
 import org.androidannotations.annotations.ViewById;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -207,12 +206,7 @@ public class MainActivity extends AppCompatActivity implements SolveDialog.Solve
         Log.i(TAG,"OnActivityResult");
         if(data==null)return;
         if(data.getStringExtra(SolverActivity.PARAMS.RESULT.toString()).equals(SolverActivity.RESULT.CANCELED.toString()))return;
-        int[][][] grani;
-        try {
-            grani=(int[][][]) StringSerializer.deserializeAtString(data.getStringExtra(SolverActivity.PARAMS.POSITION.toString()));
-        } catch (IOException | ClassNotFoundException e) {
-            throw new RuntimeException("Desserialization Error",e);
-        }
+        int[][][] grani=(int[][][]) StringSerializer.deserializeFromString(data.getStringExtra(SolverActivity.PARAMS.POSITION.toString()));
         for(int[][] s:grani)for(int[] kv:s)for(int i=0;i<kv.length;i++)kv[i]++;
         renderer.setNewKub(grani);
     }
@@ -235,13 +229,8 @@ public class MainActivity extends AppCompatActivity implements SolveDialog.Solve
     protected void onDestroy() {
         super.onDestroy();
         Log.i(TAG,"onDestroy");
-        String save= null;
-        try {
-            save = StringSerializer.serializeToString(renderer.getState());
-            Log.i(TAG, "saved in preferences");
-        } catch (IOException e) {
-            Log.e(TAG,"saving in preferences error",e);
-        }
+        String save = StringSerializer.serializeToString(renderer.getState());
+        Log.i(TAG, "saved in preferences");
         if(save!=null) {
             SharedPreferences preference = getPreferences(MODE_PRIVATE);
             SharedPreferences.Editor editor = preference.edit();
@@ -272,12 +261,8 @@ public class MainActivity extends AppCompatActivity implements SolveDialog.Solve
             SharedPreferences preferences = getPreferences(MODE_PRIVATE);
             String save = preferences.getString(KUB_STATE, null);
             if (save != null) {
-                try {
-                    state = (OpenGLRenderer.State) StringSerializer.deserializeAtString(save);
-                    Log.i(TAG, "loaded in preferences");
-                } catch (IOException | ClassNotFoundException e) {
-                    Log.e(TAG, "loading in preferences error", e);
-                }
+                state = (OpenGLRenderer.State) StringSerializer.deserializeFromString(save);
+                Log.i(TAG, "loaded in preferences");
             }
         }
         return state;
