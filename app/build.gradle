@@ -1,10 +1,25 @@
 plugins {
+    id "com.gorylenko.gradle-git-properties" version "2.3.1"
     id "com.github.breadmoirai.github-release" version "2.2.12"
 }
 
 apply plugin: 'com.android.application'
 
+task generateSomeAppResources {
+    ext.outputDir = new File(projectDir, "build/generated/res/raw/")
+    doFirst {
+        mkdir outputDir
+        new File(outputDir, "git.properties").bytes = new File(projectDir, "build/resources/main/git.properties").bytes
+    }
+}
 
+//preBuild.dependsOn('generateGitProperties')
+
+generateSomeAppResources.dependsOn('generateGitProperties')
+
+gradle.projectsEvaluated {
+    preBuild.dependsOn('generateSomeAppResources')
+}
 
 def gitInfo = { ->
     def commitHash = {
@@ -111,6 +126,14 @@ android {
                         "resourcePackageName": "com.dimotim.kubsolver"
                 ]
             }
+        }
+    }
+
+    sourceSets {
+        main {
+            res.srcDirs += [
+                    'build/generated/res',
+            ]
         }
     }
 
