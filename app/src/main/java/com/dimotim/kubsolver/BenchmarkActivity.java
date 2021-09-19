@@ -55,7 +55,7 @@ public class BenchmarkActivity extends AppCompatActivity {
 
     @AfterViews
     protected void init() {
-        versionTextView.setText(versionTextView.getText()+BuildConfig.gitHash);
+        versionTextView.setText(versionTextView.getText()/*+BuildConfig.gitHash*/);
         isCancelled.set(false);
         benchmark();
     }

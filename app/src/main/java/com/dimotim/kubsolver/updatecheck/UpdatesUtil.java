@@ -30,6 +30,6 @@ public class UpdatesUtil {
     }
 
     public static boolean isSameVersion(CheckResult checkResult){
-        return checkResult.getApkName().contains(BuildConfig.gitHash);
+        return true;//checkResult.getApkName().contains(BuildConfig.gitHash);
     }
 }
