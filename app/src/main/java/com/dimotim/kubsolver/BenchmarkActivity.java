@@ -35,6 +35,9 @@ public class BenchmarkActivity extends AppCompatActivity {
     @Bean
     protected Solvers solvers;
 
+    @Bean
+    protected GitVersionInfo gitVersionInfo;
+
     @ViewById(resName = "version")
     protected TextView versionTextView;
 
@@ -55,7 +58,7 @@ public class BenchmarkActivity extends AppCompatActivity {
 
     @AfterViews
     protected void init() {
-        versionTextView.setText(versionTextView.getText()/*+BuildConfig.gitHash*/);
+        versionTextView.setText(versionTextView.getText() + gitVersionInfo.getGitHash());
         isCancelled.set(false);
         benchmark();
     }
