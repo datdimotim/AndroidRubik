@@ -1,10 +1,10 @@
 package com.dimotim.kubsolver;
 
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.View;
@@ -23,7 +23,7 @@ import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EActivity;
 
 @EActivity
-public class SolverActivity extends AppCompatActivity {
+public class SolverActivity extends Activity {
     public enum RESULT{OK,CANCELED}
     public enum PARAMS{RESULT,POSITION}
     private FaceletController faceletController;
@@ -192,7 +192,7 @@ class Setka{
         return setka;
     }
 }
-class KubButton extends android.support.v7.widget.AppCompatButton{
+class KubButton extends Button{
     private static final int[] colors=new int[]{   R.drawable.gray_button_states,
                                                     R.drawable.red_button_states,
                                                     R.drawable.white_button_states,

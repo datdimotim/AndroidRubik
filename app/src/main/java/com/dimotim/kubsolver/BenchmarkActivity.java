@@ -1,6 +1,6 @@
 package com.dimotim.kubsolver;
 
-import android.support.v7.app.AppCompatActivity;
+import android.app.Activity;
 import android.util.Log;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @EActivity(resName = "benchmark_layout")
-public class BenchmarkActivity extends AppCompatActivity {
+public class BenchmarkActivity extends Activity {
 
     private final AtomicBoolean isCancelled = new AtomicBoolean(false);
 

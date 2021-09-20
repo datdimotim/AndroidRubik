@@ -1,5 +1,6 @@
 package com.dimotim.kubsolver;
 
+import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
@@ -9,13 +10,13 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Toast;
+
+import androidx.annotation.Nullable;
 
 import com.dimotim.kubsolver.dialogs.DialogAreYouSureShuffle;
 import com.dimotim.kubsolver.dialogs.DialogNewKub;
@@ -48,7 +49,7 @@ import lombok.Value;
 
 @EActivity(resName = "activity_main")
 @OptionsMenu(resName = "main_menu")
-public class MainActivity extends AppCompatActivity implements SolveDialog.SolveListener {
+public class MainActivity extends Activity implements SolveDialog.SolveListener {
     public static final int SOLVER_ACTIVITY_RESULT_CODE = 1;
     public static final String KUB_STATE="KUB_STATE";
     public static final String TAG=MainActivity.class.getCanonicalName();
