@@ -192,7 +192,7 @@ class Setka{
         return setka;
     }
 }
-class KubButton extends Button{
+class KubButton extends androidx.appcompat.widget.AppCompatButton{
     private static final int[] colors=new int[]{   R.drawable.gray_button_states,
                                                     R.drawable.red_button_states,
                                                     R.drawable.white_button_states,

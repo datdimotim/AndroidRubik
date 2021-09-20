@@ -17,21 +17,25 @@ import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.work.ExistingPeriodicWorkPolicy;
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
 
 import com.dimotim.kubsolver.dialogs.DialogAreYouSureShuffle;
 import com.dimotim.kubsolver.dialogs.DialogNewKub;
 import com.dimotim.kubsolver.dialogs.QRCodeAlertDialog;
 import com.dimotim.kubsolver.dialogs.SolveDialog;
-import com.dimotim.kubsolver.dialogs.YesNoDialog;
-import com.dimotim.kubsolver.services.BootReceiver;
-import com.dimotim.kubsolver.services.CheckUpdateReceiver;
+import com.dimotim.kubsolver.dialogs.YesNoDialog;;
+import com.dimotim.kubsolver.services.CheckForUpdatesWork;
 import com.dimotim.kubsolver.shaderUtils.FileUtils;
 import com.dimotim.kubsolver.updatecheck.HttpClient;
-import com.dimotim.kubsolver.updatecheck.SchedulerProvider;
 import com.dimotim.kubsolver.updatecheck.UpdatesUtil;
+import com.dimotim.kubsolver.updatecheck.model.CheckResult;
+import com.dimotim.kubsolver.updatecheck.model.ReleaseModel;
 import com.dimotim.kubsolver.util.StringSerializer;
 
 import org.androidannotations.annotations.AfterViews;
+import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EActivity;
@@ -43,8 +47,9 @@ import org.androidannotations.annotations.ViewById;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
-import io.reactivex.disposables.Disposable;
+import androidx.core.content.ContextCompat;
 import lombok.Value;
 
 @EActivity(resName = "activity_main")
@@ -52,6 +57,7 @@ import lombok.Value;
 public class MainActivity extends Activity implements SolveDialog.SolveListener {
     public static final int SOLVER_ACTIVITY_RESULT_CODE = 1;
     public static final String KUB_STATE="KUB_STATE";
+    public static final String WORK_TAG = "CHECK_FOR_UPDATE_WORK";
     public static final String TAG=MainActivity.class.getCanonicalName();
 
     @ViewById(resName = "panel")
@@ -81,8 +87,7 @@ public class MainActivity extends Activity implements SolveDialog.SolveListener 
             return;
         }
 
-        BootReceiver.enableBootReceiver(this);
-        CheckUpdateReceiver.setupRepeatingCheck(this);
+        setupCheckForUpdatesTask();
 
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.texture);
         final String vertexShaderText = FileUtils.readTextFromRaw(this, R.raw.vertexshader);
@@ -107,6 +112,17 @@ public class MainActivity extends Activity implements SolveDialog.SolveListener 
             Log.i(TAG,"state="+(findViewById(R.id.buttonSolve).getVisibility()==View.VISIBLE));
         },solvers);
         glSurfaceView.setRenderer(renderer);
+    }
+
+    private void setupCheckForUpdatesTask() {
+        PeriodicWorkRequest checkForUpdatesTask = new PeriodicWorkRequest.Builder(
+                CheckForUpdatesWork.class,
+                1,
+                TimeUnit.HOURS
+        ).build();
+
+
+        WorkManager.getInstance(this).enqueueUniquePeriodicWork(WORK_TAG, ExistingPeriodicWorkPolicy.KEEP,checkForUpdatesTask);
     }
 
     @Touch(resName = "panel")
@@ -164,45 +180,54 @@ public class MainActivity extends Activity implements SolveDialog.SolveListener 
     }
 
     @OptionsItem(resName = "menu_qr_code")
+    @Background
     void menuQrCode(){
-        Disposable disposable = HttpClient.getCheckForUpdateService()
-                .getLatestRelease()
-                .map(UpdatesUtil::parseCheckResultFromGithubResponse)
-                .observeOn(SchedulerProvider.ui())
-                .subscribeOn(SchedulerProvider.io())
-                .subscribe(
-                        success -> QRCodeAlertDialog.showDialog(this, success.getHtmlUrl()),
-                        error -> {
-                            Toast.makeText(this, error.toString(),Toast.LENGTH_LONG).show();
-                            Log.e(MainActivity.class.getCanonicalName(), error.toString(), error);
-                        }
-                );
+        try {
+            ReleaseModel releaseModel = HttpClient.getCheckForUpdateService()
+                    .getLatestRelease()
+                    .execute()
+                    .body();
+
+            CheckResult success = UpdatesUtil.parseCheckResultFromGithubResponse(releaseModel);
+
+            ContextCompat.getMainExecutor(this).execute(() -> {
+                QRCodeAlertDialog.showDialog(this, success.getHtmlUrl());
+            });
+        } catch (Exception e) {
+            ContextCompat.getMainExecutor(this).execute(() -> {
+                Toast.makeText(this, e.toString(),Toast.LENGTH_LONG).show();
+                Log.e(MainActivity.class.getCanonicalName(), e.toString(), e);
+            });
+        }
     }
 
     @OptionsItem(resName = "menu_check_for_updates")
+    @Background
     void menuCheckForUpdates(){
-        Disposable disposable = HttpClient.getCheckForUpdateService()
-                .getLatestRelease()
-                .map(UpdatesUtil::parseCheckResultFromGithubResponse)
-                .observeOn(SchedulerProvider.ui())
-                .subscribeOn(SchedulerProvider.io())
-                .subscribe(
-                        success -> {
-                            if(updatesUtil.isSameVersion(success)){
-                                Toast.makeText(this, "This version is actual",Toast.LENGTH_LONG).show();
-                                return;
-                            }
+        try {
+            ReleaseModel releaseModel = HttpClient.getCheckForUpdateService()
+                    .getLatestRelease()
+                    .execute()
+                    .body();
 
-                            YesNoDialog.showDialog(this, "New version "+success.getTagName()+" available, install update?", ()->{
-                                OpenUrlIntent.showDialog(this, success.getHtmlUrl());
-                            });
+            CheckResult success = UpdatesUtil.parseCheckResultFromGithubResponse(releaseModel);
 
-                        },
-                        error -> {
-                            Toast.makeText(this, error.toString(),Toast.LENGTH_LONG).show();
-                            Log.e(MainActivity.class.getCanonicalName(), error.toString(), error);
-                        }
-                );
+            ContextCompat.getMainExecutor(this).execute(() -> {
+                if(updatesUtil.isSameVersion(success)){
+                    Toast.makeText(this, "This version is actual",Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+                YesNoDialog.showDialog(this, "New version "+success.getTagName()+" available, install update?", ()->{
+                    OpenUrlIntent.showDialog(this, success.getHtmlUrl());
+                });
+            });
+        } catch (Exception e) {
+            ContextCompat.getMainExecutor(this).execute(() -> {
+                Toast.makeText(this, e.toString(),Toast.LENGTH_LONG).show();
+                Log.e(MainActivity.class.getCanonicalName(), e.toString(), e);
+            });
+        }
     }
 
     @OnActivityResult(SOLVER_ACTIVITY_RESULT_CODE)
