@@ -18,7 +18,7 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
-        <receiver android:name=".services.CheckUpdateReceiver">
+        <receiver android:name=".services.CheckUpdateReceiver_">
             <intent-filter>
                 <action android:name="android.alarm.receiver" />
             </intent-filter>

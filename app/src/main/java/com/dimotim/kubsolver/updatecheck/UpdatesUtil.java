@@ -1,13 +1,20 @@
 package com.dimotim.kubsolver.updatecheck;
 
-import com.dimotim.kubsolver.BuildConfig;
+import com.dimotim.kubsolver.GitVersionInfo;
 import com.dimotim.kubsolver.updatecheck.model.CheckResult;
 import com.dimotim.kubsolver.updatecheck.model.ReleaseModel;
+
+import org.androidannotations.annotations.Bean;
+import org.androidannotations.annotations.EBean;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@EBean(scope = EBean.Scope.Singleton)
 public class UpdatesUtil {
+    @Bean
+    protected GitVersionInfo gitVersionInfo;
+
     public static CheckResult parseCheckResultFromGithubResponse(ReleaseModel release){
         List<ReleaseModel.Assets> kubikApks = release.getAssets().stream()
                 .filter(f -> f.getName().toLowerCase().trim().startsWith("kubik"))
@@ -29,7 +36,7 @@ public class UpdatesUtil {
         }
     }
 
-    public static boolean isSameVersion(CheckResult checkResult){
-        return true;//checkResult.getApkName().contains(BuildConfig.gitHash);
+    public boolean isSameVersion(CheckResult checkResult){
+        return checkResult.getApkName().contains(gitVersionInfo.getGitHash());
     }
 }

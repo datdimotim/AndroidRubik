@@ -62,6 +62,9 @@ public class MainActivity extends AppCompatActivity implements SolveDialog.Solve
     @Bean
     protected Solvers solvers;
 
+    @Bean
+    protected UpdatesUtil updatesUtil;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -184,7 +187,7 @@ public class MainActivity extends AppCompatActivity implements SolveDialog.Solve
                 .subscribeOn(SchedulerProvider.io())
                 .subscribe(
                         success -> {
-                            if(UpdatesUtil.isSameVersion(success)){
+                            if(updatesUtil.isSameVersion(success)){
                                 Toast.makeText(this, "This version is actual",Toast.LENGTH_LONG).show();
                                 return;
                             }

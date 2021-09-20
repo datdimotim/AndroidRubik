@@ -12,9 +12,15 @@ import com.dimotim.kubsolver.updatecheck.HttpClient;
 import com.dimotim.kubsolver.updatecheck.SchedulerProvider;
 import com.dimotim.kubsolver.updatecheck.UpdatesUtil;
 
+import org.androidannotations.annotations.Bean;
+import org.androidannotations.annotations.EReceiver;
+
 import io.reactivex.disposables.Disposable;
 
+@EReceiver
 public class CheckUpdateReceiver extends BroadcastReceiver {
+    @Bean
+    protected UpdatesUtil updatesUtil;
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -28,7 +34,7 @@ public class CheckUpdateReceiver extends BroadcastReceiver {
                 .subscribeOn(SchedulerProvider.io())
                 .subscribe(
                         success -> {
-                            if(UpdatesUtil.isSameVersion(success)){
+                            if(updatesUtil.isSameVersion(success)){
                                 Log.d(CheckUpdateReceiver.class.getCanonicalName(), "version is same: "+success);
                                 return;
                             }
