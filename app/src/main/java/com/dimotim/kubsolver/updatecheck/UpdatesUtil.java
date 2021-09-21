@@ -8,6 +8,7 @@ import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EBean;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @EBean(scope = EBean.Scope.Singleton)
@@ -37,6 +38,10 @@ public class UpdatesUtil {
     }
 
     public boolean isSameVersion(CheckResult checkResult){
-        return checkResult.getApkName().contains(gitVersionInfo.getGitHash());
+        return Objects.equals(checkResult.getTagName(), getTagName());
+    }
+
+    public String getTagName() {
+        return gitVersionInfo.getGitInfo().getOrDefault("git.tags", "");
     }
 }
