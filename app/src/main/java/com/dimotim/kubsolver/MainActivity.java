@@ -50,6 +50,8 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import androidx.core.content.ContextCompat;
+
+import lombok.SneakyThrows;
 import lombok.Value;
 
 @EActivity(resName = "activity_main")
@@ -231,6 +233,7 @@ public class MainActivity extends Activity implements SolveDialog.SolveListener 
     }
 
     @OnActivityResult(SOLVER_ACTIVITY_RESULT_CODE)
+    @SneakyThrows
     protected void onActivityResult(Intent data) {
         Log.i(TAG,"OnActivityResult");
         if(data==null)return;
@@ -282,19 +285,23 @@ public class MainActivity extends Activity implements SolveDialog.SolveListener 
     }
 
     private State restoreState(Bundle savedInstanceState) {
-        State state = null;
         if (savedInstanceState != null) {
-            state = (State) savedInstanceState.getSerializable(KUB_STATE);
+            State state = (State) savedInstanceState.getSerializable(KUB_STATE);
             Log.i(TAG, "loaded in bundle");
+            return state;
         } else {
             SharedPreferences preferences = getPreferences(MODE_PRIVATE);
             String save = preferences.getString(KUB_STATE, null);
-            if (save != null) {
-                state = (State) StringSerializer.deserializeFromString(save);
+            if (save == null) return null;
+            try {
+                State state = (State) StringSerializer.deserializeFromString(save);
                 Log.i(TAG, "loaded in preferences");
+                return state;
+            } catch (Exception e) {
+                Log.w(TAG, e);
+                return null;
             }
         }
-        return state;
     }
 
     @Override
