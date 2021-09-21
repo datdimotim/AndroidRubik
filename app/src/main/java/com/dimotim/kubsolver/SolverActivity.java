@@ -204,14 +204,17 @@ class KubButton extends androidx.appcompat.widget.AppCompatButton{
     public KubButton(Context context) {
         super(context);
         setColor(0);
+        setGravity(Gravity.CENTER);
     }
     public KubButton(Context context, AttributeSet attrs) {
         super(context, attrs);
         setColor(0);
+        setGravity(Gravity.CENTER);
     }
     public KubButton(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         setColor(0);
+        setGravity(Gravity.CENTER);
     }
     public void setColor(int colorNumber){
         setBackgroundResource(colors[colorNumber]);
