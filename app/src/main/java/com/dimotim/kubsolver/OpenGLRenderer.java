@@ -15,13 +15,10 @@ import com.dimotim.kubSolver.Solution;
 import com.dimotim.kubsolver.kub.to_solver_interface.FormatConverter;
 import com.dimotim.kubsolver.shaderUtils.TextureUtils;
 
-import java.io.Serializable;
 import java.util.Arrays;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
-
-import lombok.Value;
 
 import static android.opengl.GLES20.GL_COLOR_BUFFER_BIT;
 import static android.opengl.GLES20.GL_DEPTH_BUFFER_BIT;
@@ -73,9 +70,9 @@ public class OpenGLRenderer implements Renderer, View.OnTouchListener {
         Matrix.setIdentityM(viewMatrix, 0);
 
         if (saveState != null) {
-            kub = new Kub(saveState.kubState);
-            kubChangeListener.kubChanged(saveState.kubState.getN());
-            System.arraycopy(saveState.viewMatrix, 0, viewMatrix, 0, 16);
+            kub = new Kub(saveState.getKubState());
+            kubChangeListener.kubChanged(saveState.getKubState().getN());
+            System.arraycopy(saveState.getViewMatrix(), 0, viewMatrix, 0, 16);
         } else {
             kub = new Kub(3);
             kubChangeListener.kubChanged(3);
@@ -168,10 +165,10 @@ public class OpenGLRenderer implements Renderer, View.OnTouchListener {
     }
 
     public void setState(final State state) {
-        kubChangeListener.kubChanged(state.kubState.getN());
+        kubChangeListener.kubChanged(state.getKubState().getN());
         glSurfaceView.queueEvent(() -> {
-            kub = new Kub(state.kubState);
-            System.arraycopy(state.viewMatrix, 0, viewMatrix, 0, 16);
+            kub = new Kub(state.getKubState());
+            System.arraycopy(state.getViewMatrix(), 0, viewMatrix, 0, 16);
             kub.shaderProgramChanged(shaderProgram);
         });
     }
@@ -255,10 +252,5 @@ public class OpenGLRenderer implements Renderer, View.OnTouchListener {
                 }
             }
         });
-    }
-    @Value
-    public static class State implements Serializable {
-        com.dimotim.kubsolver.kub.State kubState;
-        float[] viewMatrix;
     }
 }

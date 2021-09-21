@@ -64,7 +64,7 @@ public class MainActivity extends Activity implements SolveDialog.SolveListener 
     protected GLSurfaceView glSurfaceView;
     public OpenGLRenderer renderer;
 
-    private OpenGLRenderer.State savedInitialState;
+    private State savedInitialState;
 
     @Bean
     protected Solvers solvers;
@@ -95,7 +95,7 @@ public class MainActivity extends Activity implements SolveDialog.SolveListener 
 
         glSurfaceView.setEGLContextClientVersion(2);
 
-        OpenGLRenderer.State state = savedInitialState;
+        State state = savedInitialState;
         renderer=new OpenGLRenderer(glSurfaceView, bitmap, vertexShaderText, fragmentShaderText, state, size -> {
             Log.i(TAG,"kub="+size);
             if(size==3){
@@ -277,20 +277,20 @@ public class MainActivity extends Activity implements SolveDialog.SolveListener 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        OpenGLRenderer.State state=renderer.getState();
+        State state=renderer.getState();
         outState.putSerializable(KUB_STATE, state);
     }
 
-    private OpenGLRenderer.State restoreState(Bundle savedInstanceState) {
-        OpenGLRenderer.State state = null;
+    private State restoreState(Bundle savedInstanceState) {
+        State state = null;
         if (savedInstanceState != null) {
-            state = (OpenGLRenderer.State) savedInstanceState.getSerializable(KUB_STATE);
+            state = (State) savedInstanceState.getSerializable(KUB_STATE);
             Log.i(TAG, "loaded in bundle");
         } else {
             SharedPreferences preferences = getPreferences(MODE_PRIVATE);
             String save = preferences.getString(KUB_STATE, null);
             if (save != null) {
-                state = (OpenGLRenderer.State) StringSerializer.deserializeFromString(save);
+                state = (State) StringSerializer.deserializeFromString(save);
                 Log.i(TAG, "loaded in preferences");
             }
         }

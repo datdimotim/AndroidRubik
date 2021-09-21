@@ -38,13 +38,13 @@
 -keep public class android.support.v7.widget.** { *; }
 -keep public class android.support.v7.internal.widget.** { *; }
 -keep public class android.support.v7.internal.view.menu.** { *; }
-
--keep public class * extends android.support.v4.view.ActionProvider {
-    public <init>(android.content.Context);
-}
 ###### END OF APP_COMPAT_V7_RULES #######
 
 ###### APP #######
+-keep public class com.dimotim.kubsolver.State
+-keepclassmembers public class com.dimotim.kubsolver.State {
+    *;
+}
 -keep public class com.dimotim.kubsolver.Solvers
 -keepclassmembers public class com.dimotim.kubsolver.Solvers {
     *;
@@ -54,7 +54,4 @@
     *;
 }
 -keep class com.dimotim.kubsolver.updatecheck.model.** { *; }
--keepclassmembers public class io.reactivex.Single{
-    public final blockingGet();
-}
 ###### END OF APP #######
