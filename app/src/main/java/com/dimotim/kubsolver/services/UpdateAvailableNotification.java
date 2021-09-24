@@ -22,7 +22,7 @@ public class UpdateAvailableNotification {
         Notification.Builder n  = new Notification.Builder(context)
                 .setContentTitle("New update available")
                 .setContentText("version: "+version)
-                .setSmallIcon(R.drawable.blue_button_active)
+                .setSmallIcon(R.mipmap.icon1)
                 .setContentIntent(pIntent)
                 .setAutoCancel(true);
                 //.addAction(R.drawable.icon, "Call", pIntent)
