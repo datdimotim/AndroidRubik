@@ -7,6 +7,7 @@ import android.widget.TextView;
 
 import com.dimotim.kubSolver.Kub;
 import com.dimotim.kubSolver.Solution;
+import com.dimotim.kubsolver.services.UpdateCheckSharedPreferencesLog;
 
 import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Background;
@@ -50,6 +51,9 @@ public class BenchmarkActivity extends Activity {
     @ViewById(resName = "title_text_view")
     protected TextView titleTextView;
 
+    @ViewById(resName = "lastCheckForUpdates")
+    protected TextView lastUpdateCheck;
+
     @Extra("THREADS")
     protected int threads;
 
@@ -59,6 +63,7 @@ public class BenchmarkActivity extends Activity {
     @AfterViews
     protected void init() {
         versionTextView.setText(versionTextView.getText() + gitVersionInfo.getGitHash());
+        lastUpdateCheck.setText(lastUpdateCheck.getText() + new UpdateCheckSharedPreferencesLog(this).getUpdateTimeLastSuccessCheck());
         isCancelled.set(false);
         benchmark();
     }

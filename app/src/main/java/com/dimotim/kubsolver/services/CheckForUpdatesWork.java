@@ -38,7 +38,9 @@ public class CheckForUpdatesWork extends Worker {
             Context context = getApplicationContext();
 
             ContextCompat.getMainExecutor(context).execute(() -> {
-                if(UpdatesUtil_.getInstance_(context).isSameVersion(success)){
+                boolean isSameVer = UpdatesUtil_.getInstance_(context).isSameVersion(success);
+                new UpdateCheckSharedPreferencesLog(context).updateTimeLastSuccessCheck();
+                if(isSameVer){
                     Log.d(CheckForUpdatesWork.class.getCanonicalName(), "version is same: "+success);
                     return;
                 }

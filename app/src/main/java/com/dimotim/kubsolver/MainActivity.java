@@ -27,6 +27,7 @@ import com.dimotim.kubsolver.dialogs.QRCodeAlertDialog;
 import com.dimotim.kubsolver.dialogs.SolveDialog;
 import com.dimotim.kubsolver.dialogs.YesNoDialog;;
 import com.dimotim.kubsolver.services.CheckForUpdatesWork;
+import com.dimotim.kubsolver.services.UpdateCheckSharedPreferencesLog;
 import com.dimotim.kubsolver.shaderUtils.FileUtils;
 import com.dimotim.kubsolver.updatecheck.HttpClient;
 import com.dimotim.kubsolver.updatecheck.UpdatesUtil;
@@ -215,7 +216,9 @@ public class MainActivity extends Activity implements SolveDialog.SolveListener 
             CheckResult success = UpdatesUtil.parseCheckResultFromGithubResponse(releaseModel);
 
             ContextCompat.getMainExecutor(this).execute(() -> {
-                if(updatesUtil.isSameVersion(success)){
+                boolean isSameVer = updatesUtil.isSameVersion(success);
+                new UpdateCheckSharedPreferencesLog(this).updateTimeLastSuccessCheck();
+                if(isSameVer){
                     Toast.makeText(this, "This version is actual",Toast.LENGTH_LONG).show();
                     return;
                 }
