@@ -54,6 +54,9 @@ public class BenchmarkActivity extends Activity {
     @ViewById(resName = "lastCheckForUpdates")
     protected TextView lastUpdateCheck;
 
+    @ViewById(resName = "preLastCheckForUpdates")
+    protected TextView preLastUpdateCheck;
+
     @Extra("THREADS")
     protected int threads;
 
@@ -64,6 +67,7 @@ public class BenchmarkActivity extends Activity {
     protected void init() {
         versionTextView.setText(versionTextView.getText() + gitVersionInfo.getGitHash());
         lastUpdateCheck.setText(lastUpdateCheck.getText() + new UpdateCheckSharedPreferencesLog(this).getUpdateTimeLastSuccessCheck());
+        preLastUpdateCheck.setText(preLastUpdateCheck.getText() + new UpdateCheckSharedPreferencesLog(this).getUpdateTimePreLastSuccessCheck());
         isCancelled.set(false);
         benchmark();
     }

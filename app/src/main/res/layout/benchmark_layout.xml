@@ -56,6 +56,12 @@
             android:id="@+id/lastCheckForUpdates"
             android:textSize="20sp"
             android:text="last update check: "/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/preLastCheckForUpdates"
+            android:textSize="20sp"
+            android:text="prev update check: "/>
     </LinearLayout>
 
 </LinearLayout>
