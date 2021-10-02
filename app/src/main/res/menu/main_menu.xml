@@ -22,4 +22,8 @@
     <item
         android:id="@+id/menu_check_for_updates"
         android:title="check for updates" />
+
+    <item
+        android:id="@+id/menu_version_info"
+        android:title="version info" />
 </menu>

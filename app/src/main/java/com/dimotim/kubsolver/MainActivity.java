@@ -25,6 +25,7 @@ import com.dimotim.kubsolver.dialogs.DialogAreYouSureShuffle;
 import com.dimotim.kubsolver.dialogs.DialogNewKub;
 import com.dimotim.kubsolver.dialogs.QRCodeAlertDialog;
 import com.dimotim.kubsolver.dialogs.SolveDialog;
+import com.dimotim.kubsolver.dialogs.VersionInfoDialog;
 import com.dimotim.kubsolver.dialogs.YesNoDialog;;
 import com.dimotim.kubsolver.services.CheckForUpdatesWork;
 import com.dimotim.kubsolver.services.UpdateCheckSharedPreferencesLog;
@@ -233,6 +234,11 @@ public class MainActivity extends Activity implements SolveDialog.SolveListener 
                 Log.e(MainActivity.class.getCanonicalName(), e.toString(), e);
             });
         }
+    }
+
+    @OptionsItem(resName = "menu_version_info")
+    void menuVersionInfo(){
+        VersionInfoDialog.showDialog(this);
     }
 
     @OnActivityResult(SOLVER_ACTIVITY_RESULT_CODE)
