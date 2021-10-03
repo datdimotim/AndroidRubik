@@ -88,7 +88,11 @@ public class MainActivity extends Activity implements SolveDialog.SolveListener 
             return;
         }
 
-        CheckForUpdatesManager.setupCheckForUpdates(this);
+        if(kubPreferences.checkForUpdates().getOr(true)) {
+            CheckForUpdatesManager.setupCheckForUpdates(this);
+        } else {
+            CheckForUpdatesManager.cancelCheckForUpdates(this);
+        }
 
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.texture);
         final String vertexShaderText = FileUtils.readTextFromRaw(this, R.raw.vertexshader);
