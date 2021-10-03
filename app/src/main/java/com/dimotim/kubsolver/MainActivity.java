@@ -20,6 +20,7 @@ import androidx.core.content.ContextCompat;
 
 import com.dimotim.kubsolver.dialogs.DialogAreYouSureShuffle;
 import com.dimotim.kubsolver.dialogs.DialogNewKub;
+import com.dimotim.kubsolver.dialogs.PreferencesDialog;
 import com.dimotim.kubsolver.dialogs.QRCodeAlertDialog;
 import com.dimotim.kubsolver.dialogs.SolveDialog;
 import com.dimotim.kubsolver.dialogs.VersionInfoDialog;
@@ -156,6 +157,11 @@ public class MainActivity extends Activity implements SolveDialog.SolveListener 
     private static class BenchmarkConfig{
         int threads;
         int count;
+    }
+
+    @OptionsItem(resName = "menu_preferences")
+    void openPreferences() {
+        PreferencesDialog.showDialog(this);
     }
 
     @OptionsItem(resName = {
