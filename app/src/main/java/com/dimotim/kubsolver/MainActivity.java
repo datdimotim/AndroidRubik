@@ -267,12 +267,10 @@ public class MainActivity extends Activity implements SolveDialog.SolveListener 
         Log.i(TAG,"onDestroy");
         String save = StringSerializer.serializeToString(renderer.getState());
         Log.i(TAG, "saved in preferences");
-        if(save!=null) {
-            kubPreferences.edit()
-                    .kubState()
-                    .put(save)
-                    .apply();
-        }
+        kubPreferences.edit()
+                .kubState()
+                .put(save)
+                .apply();
     }
 
     private boolean supportES2() {
