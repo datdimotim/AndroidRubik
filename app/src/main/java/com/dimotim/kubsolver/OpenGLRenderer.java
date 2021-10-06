@@ -238,7 +238,6 @@ public class OpenGLRenderer implements Renderer, View.OnTouchListener {
                 state.getKvColor(grani);
                 for (int i = 0; i < 6; i++)
                     for (int j = 0; j < 2; j++) for (int k = 0; k < 2; k++) grani[i][j][k]--;
-                System.out.println("Grani: " + Arrays.deepToString(grani));
                 try {
                     long st = System.currentTimeMillis();
                     com.dimotim.kubSolver.Kub2x2 uzor = new com.dimotim.kubSolver.Kub2x2(false).apply(new Solution(solveEntry.getSolution().getHods()));
