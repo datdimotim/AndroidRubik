@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -61,6 +62,13 @@ public class MainActivity extends Activity implements SolveDialog.SolveListener 
 
     @ViewById(resName = "panel")
     protected GLSurfaceView glSurfaceView;
+
+    @ViewById(resName = "buttonSolve")
+    protected Button buttonSolve;
+
+    @ViewById(resName = "buttonEdit")
+    protected Button buttonEdit;
+
     public OpenGLRenderer renderer;
 
     private State savedInitialState;
@@ -103,19 +111,10 @@ public class MainActivity extends Activity implements SolveDialog.SolveListener 
 
         State state = savedInitialState;
         renderer=new OpenGLRenderer(glSurfaceView, bitmap, vertexShaderText, fragmentShaderText, state, size -> {
-            Log.i(TAG,"kub="+size);
-            if(size==3){
-                findViewById(R.id.buttonSolve).setVisibility(View.VISIBLE);
-                findViewById(R.id.buttonEdit).setVisibility(View.VISIBLE);
-            }else if(size==2){
-                findViewById(R.id.buttonSolve).setVisibility(View.VISIBLE);
-                findViewById(R.id.buttonEdit).setVisibility(View.GONE);
-            }
-            else {
-                findViewById(R.id.buttonSolve).setVisibility(View.GONE);
-                findViewById(R.id.buttonEdit).setVisibility(View.GONE);
-            }
-            Log.i(TAG,"state="+(findViewById(R.id.buttonSolve).getVisibility()==View.VISIBLE));
+            boolean buttonSolveVisible = size == 3 || size == 2;
+            boolean buttonEditVisible = size == 3;
+            buttonSolve.setVisibility(buttonSolveVisible ? View.VISIBLE : View.GONE);
+            buttonEdit.setVisibility(buttonEditVisible ? View.VISIBLE : View.GONE);
         },solvers);
         glSurfaceView.setRenderer(renderer);
     }
