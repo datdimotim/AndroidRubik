@@ -1,0 +1,9 @@
+version: '3'
+services:
+  builder:
+    image: androidsdk/android-30
+    volumes:
+      - /home/dimotim/AndroidStudioProjects/AndroidRubik:/project
+    working_dir: /project
+    command:
+      ["/bin/bash", "-c", "chmod 777 gradlew && ./gradlew build"]
