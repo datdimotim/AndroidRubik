@@ -1,25 +1,5 @@
 package com.dimotim.kubsolver;
 
-import android.graphics.Bitmap;
-import android.opengl.GLSurfaceView;
-import android.opengl.GLSurfaceView.Renderer;
-import android.opengl.Matrix;
-import android.util.Log;
-import android.view.MotionEvent;
-import android.view.View;
-
-import com.dimotim.kubsolver.dialogs.SolveDialog;
-import com.dimotim.kubsolver.kub.Kub;
-import com.dimotim.kubSolver.Kub2x2;
-import com.dimotim.kubSolver.Solution;
-import com.dimotim.kubsolver.kub.to_solver_interface.FormatConverter;
-import com.dimotim.kubsolver.shaderUtils.TextureUtils;
-
-import java.util.Arrays;
-
-import javax.microedition.khronos.egl.EGLConfig;
-import javax.microedition.khronos.opengles.GL10;
-
 import static android.opengl.GLES20.GL_COLOR_BUFFER_BIT;
 import static android.opengl.GLES20.GL_DEPTH_BUFFER_BIT;
 import static android.opengl.GLES20.GL_DEPTH_TEST;
@@ -33,7 +13,26 @@ import static android.opengl.GLES20.glEnable;
 import static android.opengl.GLES20.glUniform1i;
 import static android.opengl.GLES20.glUniformMatrix4fv;
 import static android.opengl.GLES20.glUseProgram;
+import static java.lang.Math.sin;
 import static java.lang.Math.tan;
+
+import android.graphics.Bitmap;
+import android.opengl.GLSurfaceView;
+import android.opengl.GLSurfaceView.Renderer;
+import android.opengl.Matrix;
+import android.util.Log;
+import android.view.MotionEvent;
+import android.view.View;
+
+import com.dimotim.kubSolver.Kub2x2;
+import com.dimotim.kubSolver.Solution;
+import com.dimotim.kubsolver.dialogs.SolveDialog;
+import com.dimotim.kubsolver.kub.Kub;
+import com.dimotim.kubsolver.kub.to_solver_interface.FormatConverter;
+import com.dimotim.kubsolver.shaderUtils.TextureUtils;
+
+import javax.microedition.khronos.egl.EGLConfig;
+import javax.microedition.khronos.opengles.GL10;
 
 public class OpenGLRenderer implements Renderer, View.OnTouchListener {
     public static final String TAG = "renderer: ";
@@ -93,45 +92,51 @@ public class OpenGLRenderer implements Renderer, View.OnTouchListener {
         glUniform1i(shaderProgram.textureId, 0);// 0- индекс текстурного блока
     }
 
+    /**
+     *
+     * @param alpha угол обзора, радианы
+     * @param aspect соотношение сторон экрана width/height
+     * @return перспективная матрица
+     */
+    public float[] getPerspectiveMatrix(float alpha, float aspect) {
+        // радиус описанной сферы вокруг кубика
+        float R = (float) Math.sqrt(3);
+        // двигаем центр кубика из 0 d, чтобы он отображался на весь экран
+        float d = R / (float) sin(alpha/2);
+        // ближняя плоскость отсечения
+        float l = d - R;
+        // дальняя плоскость отсечения
+        float L = d + R;
+
+        // Перспективная матрица, переводит координаты кубика в экранные
+        // x: [-1, 1], y: [-1, 1], z: [0, 1]
+
+        if(aspect < 1){
+            return new float[]{
+                    (float) (1 / tan(alpha/2)), 0, 0, 0,
+                    0, (float) (aspect / (tan(alpha/2))), 0, 0,
+                    0, 0, 1 / (L - l), 1,
+                    0, 0, - l / (L - l), d
+            };
+        }else {
+            return new float[]{
+                    (float) (1 / aspect / tan(alpha/2)), 0, 0, 0,
+                    0, (float) (1 / tan(alpha/2)), 0, 0,
+                    0, 0, 1 / (L - l), 1,
+                    0, 0, -l / (L - l), d
+            };
+        }
+    }
+
     public void onSurfaceChanged(GL10 arg0, int width, int height) {
         Log.i(TAG, "onSurface changed");
         this.width = width;
         this.height = height;
 
-        //Matrix.setIdentityM(monitorMatrix, 0);
-        //if(width<height)Matrix.scaleM(monitorMatrix, 0, 1.0f, this.width / this.height, 1.0f);
-        //else            Matrix.scaleM(monitorMatrix, 0, this.height / this.width, 1.0f, 1.0f);
-        //Matrix.scaleM(monitorMatrix, 0, 0.5f, 0.5f, 0.5f);
-
         float alpha = (float) (3.14 / 8.0);
-        float l = (float) 0.1;
-        float ll = (float) 20.0;
-
-        float aspect=width*1.0f/height;
-
-        final float[] pers;
-
-        if(width<height){
-            pers=new float[]{
-                    (float) (1 / tan(alpha)/aspect), 0, 0, 0,
-                    0, (float) (1 / (tan(alpha))), 0, 0,
-                    0, 0, (ll + l) / (ll - l), 1,
-                    0, 0, -2 * ll * l / (ll - l), 0
-            };
-        }else {
-            pers=new float[]{
-                    (float) (1 / tan(alpha))*0.7f, 0, 0, 0,
-                    0, (float) (1 / (tan(alpha))*aspect)*0.7f, 0, 0,
-                    0, 0, (ll + l) / (ll - l), 1,
-                    0, 0, -2 * ll * l / (ll - l), 0
-            };
-        }
-
-        Matrix.translateM(pers,0,0,0,7);
-
+        float aspect = width * 1.0f / height;
+        float[] pers = getPerspectiveMatrix(alpha, aspect);
         System.arraycopy(pers, 0, monitorMatrix, 0, pers.length);
-
-
         glUniformMatrix4fv(shaderProgram.monitorMatrixId, 1, false, monitorMatrix, 0);
     }
 
